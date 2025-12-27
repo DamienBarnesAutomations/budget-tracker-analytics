@@ -1,0 +1,5 @@
+Flask
+gunicorn
+psycopg2-binary # For PostgreSQL connection from Python
+python-telegram-bot
+requests
