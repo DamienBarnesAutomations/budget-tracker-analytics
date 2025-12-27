@@ -1,5 +1,6 @@
-Flask
-gunicorn
-psycopg2-binary # For PostgreSQL connection from Python
-python-telegram-bot
-requests
+python-telegram-bot[job-queue]
+pandas
+openpyxl
+gspread
+google-auth
+python-dotenv
