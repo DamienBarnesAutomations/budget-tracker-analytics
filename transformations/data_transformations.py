@@ -56,10 +56,8 @@ def process_main_data(df):
         if 'Country' in df.columns:
             df['Country'] = df['Country'].astype(str).str.strip().str.title()
             
-        exclude_title = EXCLUDE_CATEGORY.strip().title()
         initial_count = len(df)
         
-        df = df[df['Category'] != exclude_title]
         df = df[df['Date'].dt.date <= max_date]
         
         logger.info(f"📊 Processed {len(df)} rows. 'Month' column added for Looker Studio.")
@@ -72,18 +70,34 @@ def process_main_data(df):
 
 def calculate_daily_average_per_category(df):
     """Calculates summary stats and average daily spend per category."""
-    if df.empty: return pd.DataFrame()
+    if df.empty or 'Date' not in df.columns: 
+        return pd.DataFrame()
 
-    start_date = df['Date'].min().date()
-    end_date = df['Date'].max().date()
+    # Ensure Date is datetime
+    temp_date = pd.to_datetime(df['Date'], errors='coerce')
+    
+    # Drop rows where date is NaT (invalid)
+    valid_dates = temp_date.dropna()
+    
+    if valid_dates.empty:
+        return pd.DataFrame()
+
+    start_date = valid_dates.min()
+    end_date = valid_dates.max()
+    
+    # Calculate duration (using Timestamps directly is safer)
     trip_duration = (end_date - start_date).days + 1
+
+    # Ensure trip_duration is at least 1 to avoid division by zero
+    trip_duration = max(trip_duration, 1)
 
     total_per_cat = df.groupby('Category')['Amount'].sum()
     daily_avg = (total_per_cat / trip_duration).round(2).reset_index()
     daily_avg.columns = ['Category', 'Daily_Avg_Euro']
-    
     logger.info(f"📈 Calculated daily averages over {trip_duration} days.")
+
     return daily_avg
+    
 
 def calculate_weekly_expenditure(df):
     """Calculates total weekly expenditure for bar charts."""
@@ -102,18 +116,43 @@ def calculate_weekly_expenditure(df):
 def calculate_average_daily_budget_per_country(df):
     """Calculates Avg Daily Budget (Total Spend / Distinct Days) per country."""
     if 'Country' not in df.columns or df.empty:
-        logger.warning("⚠️ Country column missing or DF empty. Skipping budget calculation.")
         return pd.DataFrame()
 
-    # Total Spend
-    spend = df.groupby('Country')['Amount'].sum().reset_index()
-    # Distinct Days
-    days = df.groupby('Country')['Date'].apply(lambda x: x.dt.date.nunique()).reset_index()
+    # 1. Create a copy to avoid SettingWithCopy warnings
+    temp_df = df.copy()
+    exclude_title = "Ireland".strip().title()
+        
+    temp_df = temp_df[temp_df['Country'] != exclude_title]
+
+    exclude_Flights_title = "Flights".strip().title()
+        
+    temp_df = temp_df[temp_df['Category'] != exclude_Flights_title]
+
+    # 2. Force Date column to datetime objects safely
+    temp_df['Date'] = pd.to_datetime(temp_df['Date'], errors='coerce')
     
+    # 3. Drop rows with invalid dates so they don't mess up the count
+    temp_df = temp_df.dropna(subset=['Date'])
+
+    # 4. Total Spend per country
+    spend = temp_df.groupby('Country')['Amount'].sum().reset_index()
+
+    # 5. Distinct Days per country (No .dt needed if we do it this way)
+    # We convert to just the date part to ignore hours/minutes
+    days = temp_df.groupby('Country')['Date'].apply(lambda x: x.dt.date.nunique()).reset_index()
+    
+    # --- IF THE ABOVE STILL FAILS, USE THIS ALTERNATIVE FOR LINE 5: ---
+    # days = temp_df.groupby('Country')['Date'].nunique().reset_index()
+
     budget_df = pd.merge(spend, days, on='Country')
     budget_df.columns = ['Country', 'Total_Spend', 'Total_Days']
     
-    budget_df['Avg_Daily_Budget'] = (budget_df['Total_Spend'] / budget_df['Total_Days']).round(2)
+    
+    # 6. Calculate Average (handle division by zero just in case)
+    budget_df['Avg_Daily_Budget'] = (
+        budget_df['Total_Spend'] / budget_df['Total_Days'].replace(0, 1)
+    ).round(2)
+    
     return budget_df.sort_values(by='Avg_Daily_Budget', ascending=False)
 
 def calculate_comparative_weekly_spending(df):
@@ -169,21 +208,29 @@ def calculate_weekend_vs_weekday(df):
 
 def calculate_daily_avg_category_per_country(df):
     """Calculates avg spend per category, segmented by country."""
-    if 'Country' not in df.columns:
+    if 'Country' not in df.columns or df.empty:
         return pd.DataFrame()
 
-    # 1. Get total days spent in each country first
+    # 1. Get total days spent in each country
     days_per_country = df.groupby('Country')['Date'].nunique().reset_index()
     days_per_country.rename(columns={'Date': 'Days_in_Country'}, inplace=True)
 
     # 2. Get total spend per category per country
     cat_country_spend = df.groupby(['Country', 'Category'])['Amount'].sum().reset_index()
 
-    # 3. Merge them to get the denominator
+    # 3. Merge them
     merged = pd.merge(cat_country_spend, days_per_country, on='Country')
 
-    # 4. Calculate the average
-    merged['Daily_Avg'] = (merged['Amount'] / merged['Days_in_Country']).round(2)
+    # --- THE FIX ---
+    # Ensure columns are numeric before dividing
+    merged['Amount'] = pd.to_numeric(merged['Amount'], errors='coerce').fillna(0)
+    merged['Days_in_Country'] = pd.to_numeric(merged['Days_in_Country'], errors='coerce').fillna(1)
 
-    # 5. Sort by Country and then highest spending category
+    # 4. Calculate the average safely
+    merged['Daily_Avg'] = (merged['Amount'] / merged['Days_in_Country']).round(2)
+    exclude_title = EXCLUDE_CATEGORY.strip().title()
+        
+    merged = merged[merged['Category'] != exclude_title]
+    merged = merged[~merged['Category'].isin(["Medical", "Health", "Shopping"])]
+    # 5. Sort
     return merged.sort_values(['Country', 'Daily_Avg'], ascending=[True, False])
