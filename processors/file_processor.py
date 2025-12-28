@@ -9,14 +9,6 @@ logger = logging.getLogger(__name__)
 # Import the transformation logic
 from transformations.data_transformations import (
     process_main_data, 
-    calculate_daily_average_per_category,
-    calculate_weekly_expenditure,
-    calculate_average_daily_budget_per_country,
-    calculate_comparative_weekly_spending,
-    calculate_category_percentages,
-    calculate_cumulative_spend,
-    calculate_weekend_vs_weekday,
-    calculate_daily_avg_category_per_country
 )
 
 def load_csv_file(filepath):
@@ -58,14 +50,6 @@ def load_and_process_data(filepath):
         logger.info("Calculating secondary transformations...")
         sheet_data = {
             "Cleaned_Data": df_main.copy(),
-            "Category_Averages": calculate_daily_average_per_category(df_main),
-            "Weekly_Spending": calculate_weekly_expenditure(df_main),
-            "Country_Budgets": calculate_average_daily_budget_per_country(df_main),
-            "Country_Comparison": calculate_comparative_weekly_spending(df_main),
-            "Category_Percentages": calculate_category_percentages(df_main), # New
-            "Spend_Velocity": calculate_cumulative_spend(df_main),          # New
-            "Weekend_Splurges": calculate_weekend_vs_weekday(df_main),        # New
-            "Daily_Avg_Category_Country": calculate_daily_avg_category_per_country(df_main)
     }
 
         # 4. Final Formatting: Convert Date objects to strings for Google Sheets JSON

@@ -1,11 +1,10 @@
-# Use a slim version of Python to keep the image small
+# Use a slim version of Python
 FROM python:3.11-slim
 
-# Prevent Python from writing .pyc files and enable unbuffered logging
+# Environment variables for better logging and efficiency
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Set the working directory inside the container
 WORKDIR /app
 
 # Install system dependencies
@@ -13,16 +12,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first to leverage Docker cache
+# Copy requirements and install with a timeout to prevent local/render hangs
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --default-timeout=100 -r requirements.txt
 
-# Copy the rest of your application code
+# Copy the rest of the application
 COPY . .
 
-# EXPOSE the port Render uses (standard is 10000)
-# This tells Docker that the container listens on this port
+# Ensure the script is executable and has Linux line endings
+RUN chmod +x run.sh
+
+# Streamlit/Render port
 EXPOSE 10000
 
-# Run the bot script
-CMD ["python", "app.py"]
+# Entry point
+CMD ["./run.sh"]

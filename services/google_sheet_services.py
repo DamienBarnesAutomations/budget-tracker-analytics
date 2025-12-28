@@ -36,3 +36,16 @@ class GoogleSheetsService:
         except Exception as e:
             logger.error(f"Error writing to sheet {sheet_name}: {e}")
             return False
+    
+    def read_sheet_to_dataframe(self, sheet_name):
+        """Reads a specific sheet tab and returns it as a Pandas DataFrame."""
+        try:
+            worksheet = self.spreadsheet.worksheet(sheet_name)
+            data = worksheet.get_all_records()
+            df = pd.DataFrame(data)
+            logger.info(f"Successfully read {len(df)} rows from {sheet_name}.")
+            return df
+        except Exception as e:
+            logger.error(f"Error reading from sheet {sheet_name}: {e}")
+            return pd.DataFrame()
+    

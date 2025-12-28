@@ -1,9 +1,15 @@
-python-telegram-bot[job-queue]
+# --- Bot Engine ---
+python-telegram-bot
+
+# --- Web Engine ---
+streamlit
 pandas
-openpyxl
+plotly
+
+# --- Google Sheets Integration ---
 gspread
 google-auth
+
+# --- Deployment Utilities ---
 python-dotenv
-flask
-gunicorn
 waitress
