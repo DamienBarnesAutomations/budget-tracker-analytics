@@ -1,6 +1,7 @@
-python-telegram-bot[job-queue]
+pyTelegramBotAPI
 pandas
 openpyxl
 gspread
+gspread-dataframe
 google-auth
-python-dotenv
+flask

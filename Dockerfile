@@ -8,7 +8,7 @@ ENV PYTHONUNBUFFERED=1
 # Set the working directory inside the container
 WORKDIR /app
 
-# Install system dependencies (needed for some pandas operations)
+# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
@@ -20,5 +20,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of your application code
 COPY . .
 
-# Run the bot script (assuming your main file is bot.py)
+# EXPOSE the port Render uses (standard is 10000)
+# This tells Docker that the container listens on this port
+EXPOSE 10000
+
+# Run the bot script
 CMD ["python", "app.py"]
