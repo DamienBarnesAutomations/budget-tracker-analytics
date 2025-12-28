@@ -1,7 +1,7 @@
-pyTelegramBotAPI
+python-telegram-bot[job-queue]
 pandas
 openpyxl
 gspread
-gspread-dataframe
 google-auth
+python-dotenv
 flask

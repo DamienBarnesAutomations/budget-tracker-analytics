@@ -4,6 +4,7 @@ from threading import Thread
 from flask import Flask
 from dotenv import load_dotenv
 from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
+from waitress import serve
 
 # Import custom handlers from your subfolder
 from handlers.telegram_handler import start_command, handle_document
@@ -16,9 +17,9 @@ def health_check():
     return "Bot is alive!", 200
 
 def run_flask():
-    # Render provides the PORT environment variable
     port = int(os.environ.get("PORT", 10000))
-    app.run(host='0.0.0.0', port=port)
+    # This replaces app.run() and removes the Warning
+    serve(app, host='0.0.0.0', port=port)
 # --------------------------------------------
 
 # Initialize logging
