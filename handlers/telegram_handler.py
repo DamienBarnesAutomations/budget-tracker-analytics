@@ -2,6 +2,7 @@ import os
 import logging
 from telegram import Update
 from telegram.ext import ContextTypes
+from handlers.file_handler import orchestrate_file_process
 
 # Standard logging config to capture timestamps and severity levels
 logging.basicConfig(
@@ -49,8 +50,15 @@ async def handle_document(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
         logger.info(f"Successfully saved: {file_path}")
         await update.message.reply_text(f"✅ File saved successfully! Processing will begin.")
-        
-        return file_path
+        # Call the orchestrator
+        all_sheet_data = orchestrate_file_process(file_path)
+
+        if all_sheet_data:
+            await update.message.reply_text("✅ All data processed and categorized!")
+        else:
+            await update.message.reply_text("❌ Transformation failed.")
+            
+            return file_path
 
     except Exception as e:
         # 5. Catch network errors or permission issues
