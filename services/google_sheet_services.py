@@ -1,5 +1,6 @@
 import gspread
 import logging
+import pandas as pd
 from google.oauth2.service_account import Credentials
 
 logger = logging.getLogger(__name__)

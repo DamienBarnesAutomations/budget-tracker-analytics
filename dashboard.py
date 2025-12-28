@@ -28,7 +28,7 @@ except Exception as e:
 def get_data():
     logger.info("Attempting to fetch data from Google Sheets...")
     try:
-        df = service.read_sheet_to_dataframe("cleaned_data")
+        df = service.read_sheet_to_dataframe("Cleaned_Data")
         if df.empty:
             logger.warning("Dataframe returned is empty.")
         else:
