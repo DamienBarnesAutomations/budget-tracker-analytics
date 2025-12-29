@@ -63,7 +63,6 @@ def chart_daily_avg_category_per_country(df):
             color="Country",
             barmode="group",
             text="Daily_Avg",
-            title="How much am I spending per day in each country?",
             labels={"Daily_Avg": "Avg Daily Spend (€)", "Category": "Expense Type"},
             template="plotly_dark"
         )
@@ -261,6 +260,7 @@ def plot_total_and_average_per_country(df):
             xaxis_title="Total Euros (€)",
             yaxis_title="",
             xaxis_type="log",
+            showlegend=False,
             xaxis_range=[0, np.log10(max_val * 1.2)], # Starts the 'visual' bar at €1
         )
 
@@ -275,6 +275,7 @@ def plot_total_and_average_per_country(df):
         fig_bar.update_layout(
             height=300, # Compact height
             margin=dict(l=10, r=10, t=20, b=10),
+            showlegend=False,
             xaxis_fixedrange=True, # Disable Zoom
             yaxis_fixedrange=True, # Disable Zoom
             dragmode=False,        # Disable Pan,
