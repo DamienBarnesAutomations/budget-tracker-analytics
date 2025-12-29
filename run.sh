@@ -2,7 +2,7 @@
 
 # 1. Start the Telegram Bot in the background
 echo "🚀 Starting Telegram Bot..."
-python app.py &
+#python app.py &
 
 # 2. Start the Streamlit Dashboard
 # We bind it to port 10000 so Render can find it

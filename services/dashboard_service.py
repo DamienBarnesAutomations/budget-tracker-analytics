@@ -10,7 +10,8 @@ from transformations.data_transformations import (
     calculate_daily_avg_category_per_country,
     calculate_daily_average_per_category,
     calculate_average_daily_budget_per_country,
-    calculate_total_spend_per_country
+    calculate_total_spend_per_country,
+    calculate_cumulative_spend_per_country_by_day
 )
 
 # --- LOGGING SETUP ---
@@ -126,7 +127,7 @@ def plot_total_spend(df):
     remaining = TOTAL_BUDGET - total_spent
 
     # 2. Display side-by-side
-    col1, col2, buffer = st.columns([1, 1, 0.1], gap="small")
+    col1, col2 = st.columns([1, 1], gap="small")
 
     with col1:
         st.metric(
@@ -234,6 +235,52 @@ def plot_total_and_average_per_country(df):
             dragmode=False,        # Disable Pan,
             coloraxis_showscale=False, xaxis_title="", yaxis_title="")
         st.plotly_chart(fig_bar, width='stretch', config={'displayModeBar': False})
+
+def plot_country_comparison_burn(df):
+    chart_data = calculate_cumulative_spend_per_country_by_day(df)
+    
+    if chart_data.empty:
+        st.info("No data available for comparison.")
+        return
+
+    st.caption("📈 Cumulative Spend Comparison (Day-by-Day)")
+
+    fig = px.line(
+        chart_data,
+        x='Day_Num',
+        y='Cumulative_Total',
+        color='Country',
+        template="plotly_dark",
+        labels={
+            'Day_Num': 'Day in Country',
+            'Cumulative_Total': 'Total Spent (€)'
+        }
+    )
+
+    # Apply "Neat & Compressed" Styling
+    fig.update_layout(
+        height=300,
+        margin=dict(l=10, r=10, t=10, b=10),
+        xaxis_fixedrange=True,
+        yaxis_fixedrange=True,
+        dragmode=False,
+        showlegend=True,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=-0.5,
+            xanchor="center",
+            x=0.5,
+            title=""
+        ),
+        xaxis=dict(showgrid=False),
+        yaxis=dict(showgrid=True, gridcolor="#333")
+    )
+
+    # Make the lines slightly thicker for mobile visibility
+    fig.update_traces(line=dict(width=3))
+
+    st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
 
 

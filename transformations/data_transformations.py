@@ -243,3 +243,20 @@ def calculate_total_spend_per_country(df):
     total_spend = df.groupby('Country')['Amount'].sum().reset_index()
     # Sort so the highest spending country is at the top
     return total_spend.sort_values(by='Amount', ascending=True)
+
+def calculate_cumulative_spend_per_country_by_day(df):
+    """Groups spend by country and day number for comparison."""
+    if df.empty:
+        return pd.DataFrame()
+
+    # 1. Group by Country and Date to get daily totals
+    daily_country = df.groupby(['Country', 'Date'])['Amount'].sum().reset_index()
+    daily_country = daily_country.sort_values(['Country', 'Date'])
+
+    # 2. Create the 'Day Number' column (Day 1, 2, 3...) for each country
+    daily_country['Day_Num'] = daily_country.groupby('Country').cumcount() + 1
+
+    # 3. Calculate the running total for each country
+    daily_country['Cumulative_Total'] = daily_country.groupby('Country')['Amount'].cumsum()
+
+    return daily_country
