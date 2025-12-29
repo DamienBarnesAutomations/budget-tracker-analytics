@@ -194,9 +194,8 @@ def plot_total_and_average_per_country(df):
             orientation='h',
             text='Amount',
             template="plotly_dark",
-            color='Amount',
-            log_x=True,
-            color_continuous_scale='Blues' # Different color than your daily avg chart
+            color='Country',
+            log_x=True
         )
 
         # 3. Apply Mobile-Friendly Styling & Scroll-Lock
@@ -226,7 +225,7 @@ def plot_total_and_average_per_country(df):
     with column2:
         # B. Daily Average by Country (Bar)
         st.caption("🏳️‍🌈 By Country (Daily)")
-        fig_bar = px.bar(bar_data, x='Avg_Daily_Budget', y='Country', orientation='h', text_auto='.2f', template="plotly_dark", color='Avg_Daily_Budget', color_continuous_scale='Greens')
+        fig_bar = px.bar(bar_data, x='Avg_Daily_Budget', y='Country', orientation='h', text_auto='.2f', template="plotly_dark", color='Country')
         fig_bar.update_layout(
             height=300, # Compact height
             margin=dict(l=10, r=10, t=20, b=10),
@@ -259,24 +258,25 @@ def plot_country_comparison_burn(df):
 
     # Apply "Neat & Compressed" Styling
     fig.update_layout(
-        height=300,
-        margin=dict(l=10, r=10, t=10, b=10),
+        height=350, # Increased slightly to accommodate the legend
+        margin=dict(l=10, r=10, t=10, b=80), # Increased bottom margin for legend space
         xaxis_fixedrange=True,
         yaxis_fixedrange=True,
         dragmode=False,
         showlegend=True,
         legend=dict(
             orientation="h",
-            yanchor="bottom",
-            y=-0.5,
+            yanchor="top",
+            y=-0.2,            # Pulls it further down away from the X-axis
             xanchor="center",
             x=0.5,
+            entrywidth=70,     # Forces items to have specific widths to prevent overlap
+            entrywidthmode="pixels",
             title=""
         ),
         xaxis=dict(showgrid=False),
         yaxis=dict(showgrid=True, gridcolor="#333")
     )
-
     # Make the lines slightly thicker for mobile visibility
     fig.update_traces(line=dict(width=3))
 
