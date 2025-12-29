@@ -61,7 +61,7 @@ def chart_daily_avg_category_per_country(df):
             x="Category",
             y="Daily_Avg",
             color="Country",
-            barmode="group",
+            barmode="stack",
             text="Daily_Avg",
             labels={"Daily_Avg": "Avg Daily Spend (€)", "Category": "Expense Type"},
             template="plotly_dark"
