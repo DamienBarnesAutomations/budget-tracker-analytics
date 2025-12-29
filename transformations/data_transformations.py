@@ -57,7 +57,7 @@ def process_main_data(df):
             df['Country'] = df['Country'].astype(str).str.strip().str.title()
             
         initial_count = len(df)
-        
+        df = df[~df['Category'].isin("Flights")
         df = df[df['Date'].dt.date <= max_date]
         
         logger.info(f"📊 Processed {len(df)} rows. 'Month' column added for Looker Studio.")
