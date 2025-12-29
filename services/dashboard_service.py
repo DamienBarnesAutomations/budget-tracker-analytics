@@ -50,7 +50,7 @@ def get_data():
 def chart_daily_avg_category_per_country(df):
     chart_data = calculate_daily_avg_category_per_country(df)
     if not chart_data.empty:
-        st.subheader("Daily Average Spending per Category")
+        st.caption("Daily Average Spending per Category")
         
         # Create the Grouped Bar Chart
         fig = px.bar(
@@ -77,18 +77,20 @@ def plot_cumulative_burn(df):
     burn_df = df.groupby('Date')['Amount'].sum().reset_index().sort_values('Date')
     burn_df['Cumulative_Total'] = burn_df['Amount'].cumsum()
 
+    st.caption("📈 Total Spending Over Time")
     fig = px.line(
         burn_df,
         x='Date',
         y='Cumulative_Total',
-        title="Total Spending Over Time (The Burn)",
+        #title="📈 Total Spending Over Time (The Burn)",
         labels={'Cumulative_Total': 'Total Euro (€)'},
         template="plotly_dark"
     )
     # Add a "Budget Ceiling" dashed line
     fig.add_hline(y=TOTAL_BUDGET, line_dash="dash", line_color="red", annotation_text="Budget Limit")
     
-    st.plotly_chart(fig, width='stretch')
+    st.plotly_chart(fig, width='stretch', config={'displayModeBar': False})
+    
 
 def plot_total_spend(df):
     total_spent = df['Amount'].sum()
@@ -115,70 +117,37 @@ def plot_total_spend(df):
         )
 
     percent_used = min(total_spent / TOTAL_BUDGET, 1.0)
+    days_remaining = (TOTAL_BUDGET - total_spent) / daily_avg
+
+    st.info(f"💡 At €{daily_avg:,.2f}/day, your budget lasts for **{int(days_remaining)} more days**.")
     st.progress(percent_used, text=f"{percent_used:.1%} of budget exhausted")
 
 def plot_daily_average_per_category(df):
-    st.subheader("Daily Budget Allocation")
-
     cat_avg_df = calculate_daily_average_per_category(df.copy())
-    country_avg_df = calculate_average_daily_budget_per_country(df.copy())
-    # 2. Create Layout
-    fig_pie = px.pie(
-        cat_avg_df, 
-        values='Daily_Avg_Euro', 
-        names='Category',
-        hole=0.4,
-        template="plotly_dark"
-    )
-    fig_pie.update_layout(showlegend=True) # Hide legend to save space
-    st.plotly_chart(fig_pie, width='stretch')
 
-    st.subheader("💰 Total Spend Breakdown")
+    column1, column2 = st.columns(2)
+    with column1:
+        st.caption("Daily Budget Allocation")
+        # 2. Create Layout
+        fig_pie = px.pie(
+            cat_avg_df, 
+            values='Daily_Avg_Euro', 
+            names='Category',
+            hole=0.5,
+            template="plotly_dark"
+        )
+    
+        fig_pie.update_layout(margin=dict(l=20, r=20, t=20, b=20), legend=dict(orientation="h", y=-0.1))
+        st.plotly_chart(fig_pie, width='stretch', config={'displayModeBar': False})
+    
+    with column2:
+        # B. Daily Average by Country (Bar)
+        st.caption("🏳️‍🌈 By Country (Daily)")
+        bar_data = calculate_average_daily_budget_per_country(df)
+        fig_bar = px.bar(bar_data, x='Avg_Daily_Budget', y='Country', orientation='h', text_auto='.2f', template="plotly_dark", color='Avg_Daily_Budget', color_continuous_scale='Reds')
+        fig_bar.update_layout(coloraxis_showscale=False, xaxis_title="", yaxis_title="")
+        st.plotly_chart(fig_bar, use_container_width=True, config={'displayModeBar': False})
 
-    # 1. Calculate and Sort (Same as your logic)
-    total_cat_df = df.groupby('Category')['Amount'].sum().reset_index()
-    total_cat_df = total_cat_df.sort_values('Amount', ascending=True) # Ascending=True makes the largest bar appear at the top in 'h' mode
 
-    # 2. Create the Horizontal Bar Chart
-    fig_total = px.bar(
-        total_cat_df,
-        x='Amount',
-        y='Category',
-        orientation='h',
-        text='Amount', # This puts the value on the bar
-        title="Cumulative Spend by Category",
-        template="plotly_dark",
-        color='Amount',
-        color_continuous_scale='GnBu' # Green-Blue gradient
-    )
 
-    # 3. Clean up the look
-    fig_total.update_traces(
-        texttemplate='€%{text:,.2f}', 
-        textposition='outside'
-    )
-
-    fig_total.update_layout(
-        xaxis_title="Total Euros (€)",
-        yaxis_title="",
-        showlegend=False,
-        coloraxis_showscale=False,
-        margin=dict(l=20, r=20, t=40, b=20),
-        height=400 # Adjust height based on how many categories you have
-    )
-
-    st.plotly_chart(fig_total, width='stretch')
-
-    # st.markdown("### 🏳️‍🌈 By Country")
-    # fig_country = px.bar(
-    #     country_avg_df,
-    #     y='Country',
-    #     x='Avg_Daily_Budget',
-    #     orientation='h', # Horizontal is better for country lists
-    #     text='Avg_Daily_Budget',
-    #     template="plotly_dark",
-    #     color='Avg_Daily_Budget',
-    #     color_continuous_scale='Reds'
-    # )
-    # fig_country.update_layout(showlegend=False, coloraxis_showscale=False)
-    # st.plotly_chart(fig_country, width='stretch')
+    

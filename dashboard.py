@@ -16,8 +16,23 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # --- UI LAYOUT ---
-st.title("🌍 Trip Expenses")
 df = get_data()
+st.markdown("""
+    <style>
+    /* Reduce padding at the top of the page */
+    .block-container {
+        padding-top: 2rem;
+        padding-bottom: 0rem;
+    }
+    /* Reduce gap between individual elements */
+    [data-testid="stVerticalBlock"] {
+        gap: 0.5rem;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+st.set_page_config(page_title="Travel Expenses", layout="wide")
+
+st.title("🌍 Travel Expenses")
 
 
 
@@ -29,3 +44,8 @@ else:
     plot_daily_average_per_category(df.copy())
     plot_cumulative_burn(df.copy())
     chart_daily_avg_category_per_country(df.copy())
+
+# --- 6. RECENT TRANSACTIONS ---
+with st.expander("📝 Recent Transactions"):
+    st.write("Latest entries ...")
+    st.dataframe(df.head(15))
