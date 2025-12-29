@@ -51,12 +51,16 @@ def get_data():
         return pd.DataFrame()
 
 def chart_daily_avg_category_per_country(df):
+def chart_daily_avg_category_per_country(df):
     chart_data = calculate_daily_avg_category_per_country(df)
     
     if not chart_data.empty:
+        # 1. Sort the data: Group by Category and sort by the total/max spend 
+        # so the 'biggest' categories appear at the top.
+        category_order = chart_data.groupby("Category")["Daily_Avg"].sum().sort_values(ascending=True).index
+        
         st.caption("Daily Average Spending per Category")
         
-        # We switch x and y to make it horizontal
         fig = px.bar(
             chart_data,
             y="Category",
@@ -64,44 +68,42 @@ def chart_daily_avg_category_per_country(df):
             color="Country",
             barmode="group",
             text="Daily_Avg",
-            orientation='h', 
-            title="How much am I spending per day in each country?",
+            orientation='h',
+            title=None, # Removes the title to stop the overlap
             labels={"Daily_Avg": "Avg Daily Spend (€)", "Category": ""},
             template="plotly_dark",
-            category_orders={"Category": sorted(chart_data["Category"].unique())}
+            category_orders={"Category": list(category_order)} 
         )
 
         fig.update_traces(
             textposition='outside', 
-            texttemplate='€%{text:.1f}',
-            marker_line_width=0 
+            texttemplate='%{text:.1f}'
         )
         
         fig.update_layout(
-            uniformtext_minsize=8, 
-            uniformtext_mode='hide',
             showlegend=True,
             legend=dict(
                 orientation="h",
                 yanchor="bottom",
-                y=1.05,
+                y=1.02, # Sits right at the top of the chart area
                 xanchor="center",
                 x=0.5,
-                title_text=""
+                title_text="" # Removes the word "Country"
             ),
-            # 'l' is left margin - increase this if category names are very long
-            margin=dict(l=120, t=80, r=40, b=50), 
+            # Increase top margin slightly for the legend
+            # Increase left margin 'l' so names like 'Accommodation' aren't cut off
+            margin=dict(l=110, t=50, r=40, b=40), 
             dragmode=False,
-            height=500 
+            height=500 # Fixed height to prevent "squooshing"
         )
 
         fig.update_xaxes(fixedrange=True)
-        # Fixed the property name below to 'autorange'
-        fig.update_yaxes(fixedrange=True, autorange="reversed") 
+        fig.update_yaxes(fixedrange=True)
 
         st.plotly_chart(fig, use_container_width=True)
     else:
         st.info("Add some expenses with Country and Category tags to see the chart!")
+
 
 def chart_daily_avg_category_per_country2(df):
     chart_data = calculate_daily_avg_category_per_country(df)
