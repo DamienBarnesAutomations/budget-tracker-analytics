@@ -38,6 +38,7 @@ else:
         plot_cumulative_burn(df.copy())
     with burn2:
         plot_country_comparison_burn(df.copy())
+    st.divider()
     chart_daily_avg_category_per_country(df.copy())
 
 # --- 6. RECENT TRANSACTIONS ---

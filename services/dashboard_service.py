@@ -52,84 +52,45 @@ def get_data():
 
 def chart_daily_avg_category_per_country(df):
     chart_data = calculate_daily_avg_category_per_country(df)
-    
     if not chart_data.empty:
-        # 1. Sort the data: Group by Category and sort by the total/max spend 
-        # so the 'biggest' categories appear at the top.
-        category_order = chart_data.groupby("Category")["Daily_Avg"].sum().sort_values(ascending=True).index
-        
         st.caption("Daily Average Spending per Category")
         
+        # Create the Horizontal Grouped Bar Chart
         fig = px.bar(
             chart_data,
-            y="Category",
-            x="Daily_Avg",
+            x="Daily_Avg",       # Swapped to x
+            y="Category",        # Swapped to y
             color="Country",
+            orientation='h',     # Added for horizontal orientation
             barmode="group",
             text="Daily_Avg",
-            orientation='h',
-            title=None, # Removes the title to stop the overlap
-            labels={"Daily_Avg": "Avg Daily Spend (€)", "Category": ""},
-            template="plotly_dark",
-            category_orders={"Category": list(category_order)} 
-        )
-
-        fig.update_traces(
-            textposition='outside', 
-            texttemplate='%{text:.1f}'
-        )
-        
-        fig.update_layout(
-            showlegend=True,
-            legend=dict(
-                orientation="h",
-                yanchor="bottom",
-                y=1.02, # Sits right at the top of the chart area
-                xanchor="center",
-                x=0.5,
-                title_text="" # Removes the word "Country"
-            ),
-            # Increase top margin slightly for the legend
-            # Increase left margin 'l' so names like 'Accommodation' aren't cut off
-            margin=dict(l=10, t=10, r=30, b=10), 
-            dragmode=False,
-            height=500 # Fixed height to prevent "squooshing"
-        )
-
-        fig.update_xaxes(fixedrange=True)
-        fig.update_yaxes(fixedrange=True)
-
-        st.plotly_chart(fig, width='stretch')
-    else:
-        st.info("Add some expenses with Country and Category tags to see the chart!")
-
-
-def chart_daily_avg_category_per_country2(df):
-    chart_data = calculate_daily_avg_category_per_country(df)
-    if not chart_data.empty:
-        st.caption("Daily Average Spending per Category")
-        
-        # Create the Grouped Bar Chart
-        fig = px.bar(
-            chart_data,
-            x="Category",
-            y="Daily_Avg",
-            color="Country",
-            barmode="group", # This puts the bars side-by-side
-            text="Daily_Avg", # Shows the number on top of the bar
             title="How much am I spending per day in each country?",
             labels={"Daily_Avg": "Avg Daily Spend (€)", "Category": "Expense Type"},
             template="plotly_dark"
         )
 
-        # Style the numbers on top of the bars
-        fig.update_traces(textposition='outside')
+        # Style the numbers to the right of the bars
+        fig.update_traces(textposition='outside', texttemplate='%{text:.2f}')
         fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
-        # 1. Lock the Axes (Prevents pinching/zooming)
+        fig.update_layout(
+            legend_title_text="",
+            legend=dict(
+                orientation="h",     # Horizontal orientation
+                yanchor="bottom",
+                y=-0.3,              # Positions legend below the x-axis
+                xanchor="center",
+                x=0.5                # Centers the legend
+            ),
+            uniformtext_minsize=8, 
+            uniformtext_mode='hide',
+            dragmode=False
+        )
+        
+        # 1. Lock the Axes
         fig.update_xaxes(fixedrange=True)
         fig.update_yaxes(fixedrange=True)
 
-# 2. Disable Dragging (Prevents selecting/panning)
+        # 2. Disable Dragging
         fig.update_layout(dragmode=False)
         st.plotly_chart(fig, width='stretch')
     else:
@@ -238,7 +199,7 @@ def plot_total_and_average_per_country(df):
     bar_data = calculate_average_daily_budget_per_country(df.copy())
 
     with column1:
-        st.caption("🏳️‍🌈 By Country (Total)")
+        st.caption("🌏 By Country (Total)")
         total_spend = total_spend[total_spend['Amount'] > 0]
         max_val = total_spend['Amount'].max()
         fig_country_total = px.bar(
@@ -279,7 +240,7 @@ def plot_total_and_average_per_country(df):
 
     with column2:
         # B. Daily Average by Country (Bar)
-        st.caption("🏳️‍🌈 By Country (Daily)")
+        st.caption("🌏 By Country (Daily)")
         fig_bar = px.bar(bar_data, x='Avg_Daily_Budget', y='Country', orientation='h', text_auto='.2f', template="plotly_dark", color='Country')
         fig_bar.update_layout(
             height=300, # Compact height
@@ -307,14 +268,14 @@ def plot_country_comparison_burn(df):
         color='Country',
         template="plotly_dark",
         labels={
-            'Day_Num': 'Day in Country',
+            'Day_Num': 'Days in Country',
             'Cumulative_Total': 'Total Spent (€)'
         }
     )
 
     # Apply "Neat & Compressed" Styling
     fig.update_layout(
-        height=350, # Increased slightly to accommodate the legend
+        height=315, # Increased slightly to accommodate the legend
         margin=dict(l=10, r=10, t=10, b=80), # Increased bottom margin for legend space
         xaxis_fixedrange=True,
         yaxis_fixedrange=True,
@@ -323,7 +284,7 @@ def plot_country_comparison_burn(df):
         legend=dict(
             orientation="h",
             yanchor="top",
-            y=-0.2,            # Pulls it further down away from the X-axis
+            y=-0.3,            # Pulls it further down away from the X-axis
             xanchor="center",
             x=0.5,
             entrywidth=70,     # Forces items to have specific widths to prevent overlap

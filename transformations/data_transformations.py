@@ -233,7 +233,7 @@ def calculate_daily_avg_category_per_country(df):
     merged = merged[merged['Category'] != exclude_title]
     merged = merged[~merged['Category'].isin(["Medical", "Health", "Shopping"])]
     # 5. Sort
-    return merged.sort_values(['Country', 'Daily_Avg'], ascending=[True, False])
+    return merged.sort_values(['Country', 'Daily_Avg'], ascending=[True, True])
 
 def calculate_total_spend_per_country(df):
     """Calculates the absolute total spent in each country."""
