@@ -52,45 +52,53 @@ def get_data():
 
 def chart_daily_avg_category_per_country(df):
     chart_data = calculate_daily_avg_category_per_country(df)
+    
     if not chart_data.empty:
         st.caption("Daily Average Spending per Category")
         
-        # Create the Grouped Bar Chart
+        # We switch x and y to make it horizontal
         fig = px.bar(
             chart_data,
-            x="Category",
-            y="Daily_Avg",
+            y="Category",
+            x="Daily_Avg",
             color="Country",
-            barmode="overlay",
+            barmode="group",
             text="Daily_Avg",
-            labels={"Daily_Avg": "Avg Daily Spend (€)", "Category": "Expense Type"},
-            template="plotly_dark"
+            orientation='h', # <--- This makes it horizontal
+            title="How much am I spending per day in each country?",
+            labels={"Daily_Avg": "Avg Daily Spend (€)", "Category": ""},
+            template="plotly_dark",
+            # This ensures countries are grouped consistently
+            category_orders={"Category": sorted(chart_data["Category"].unique())}
         )
 
-        # Style the numbers on top of the bars
-        fig.update_traces(textposition='outside')
+        fig.update_traces(
+            textposition='outside', 
+            texttemplate='€%{text:.1f}',
+            marker_line_width=0 # Cleaner look without borders
+        )
+        
         fig.update_layout(
             uniformtext_minsize=8, 
             uniformtext_mode='hide',
-            # Move legend to the top horizontal
+            showlegend=True,
             legend=dict(
-                orientation="h",   # Horizontal orientation
+                orientation="h",
                 yanchor="bottom",
-                y=1.02,            # Places it just above the plotting area
+                y=1.05,
                 xanchor="center",
-                x=0.5              # Centers the legend
+                x=0.5,
+                title_text=""
             ),
-            # Increase top margin slightly so the legend doesn't overlap the title
-            margin=dict(t=80) 
+            # Give the left side (Y-axis) enough margin for category names
+            margin=dict(l=120, t=80, r=40), 
+            dragmode=False,
+            height=500 # Slightly taller to prevent cramping
         )
 
-        # 1. Lock the Axes (Prevents pinching/zooming)
         fig.update_xaxes(fixedrange=True)
-        fig.update_yaxes(fixedrange=True)
+        fig.update_yaxes(fixedrange=True, autoresize=True)
 
-        # 2. Disable Dragging (Prevents selecting/panning)
-        fig.update_layout(dragmode=False)
-        
         st.plotly_chart(fig, use_container_width=True)
     else:
         st.info("Add some expenses with Country and Category tags to see the chart!")
