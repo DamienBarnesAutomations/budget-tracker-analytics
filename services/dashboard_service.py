@@ -75,16 +75,20 @@ def chart_daily_avg_category_per_country(df):
         fig.update_layout(
             legend_title_text="",
             legend=dict(
-                orientation="h",     # Horizontal orientation
-                yanchor="bottom",
-                y=-0.3,              # Positions legend below the x-axis
-                xanchor="center",
-                x=0.5                # Centers the legend
-            ),
+            orientation="h",
+            yanchor="top",
+            y=-0.3,            # Pulls it further down away from the X-axis
+            xanchor="center",
+            x=0.5,
+            entrywidth=70,     # Forces items to have specific widths to prevent overlap
+            entrywidthmode="pixels",
+            title=""
+        ),
             uniformtext_minsize=8, 
             uniformtext_mode='hide',
             dragmode=False
         )
+        
         
         # 1. Lock the Axes
         fig.update_xaxes(fixedrange=True)

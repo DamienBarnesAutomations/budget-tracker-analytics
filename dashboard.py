@@ -32,7 +32,9 @@ if df.empty:
 else:
     plot_total_spend(df.copy())
     plot_daily_average_per_category(df.copy())
+    st.divider()
     plot_total_and_average_per_country(df.copy())
+    st.divider()
     burn1, burn2 = st.columns([1, 1], gap="small")
     with burn1:
         plot_cumulative_burn(df.copy())
