@@ -153,7 +153,7 @@ def calculate_average_daily_budget_per_country(df):
         budget_df['Total_Spend'] / budget_df['Total_Days'].replace(0, 1)
     ).round(2)
     
-    return budget_df.sort_values(by='Avg_Daily_Budget', ascending=False)
+    return budget_df.sort_values(by='Avg_Daily_Budget', ascending=True)
 
 def calculate_comparative_weekly_spending(df):
     """Calculates spending by relative week number (Week 1, 2, 3...)"""
@@ -234,3 +234,12 @@ def calculate_daily_avg_category_per_country(df):
     merged = merged[~merged['Category'].isin(["Medical", "Health", "Shopping"])]
     # 5. Sort
     return merged.sort_values(['Country', 'Daily_Avg'], ascending=[True, False])
+
+def calculate_total_spend_per_country(df):
+    """Calculates the absolute total spent in each country."""
+    if 'Country' not in df.columns or df.empty:
+        return pd.DataFrame()
+
+    total_spend = df.groupby('Country')['Amount'].sum().reset_index()
+    # Sort so the highest spending country is at the top
+    return total_spend.sort_values(by='Amount', ascending=True)

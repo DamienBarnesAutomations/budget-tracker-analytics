@@ -5,7 +5,7 @@ import pandas as pd
 import logging
 from services.dashboard_service import (
     get_data, chart_daily_avg_category_per_country, plot_cumulative_burn, plot_total_spend,
-    plot_daily_average_per_category
+    plot_daily_average_per_category, plot_total_and_average_per_country
 )
 
 # --- LOGGING SETUP ---
@@ -32,9 +32,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 st.set_page_config(page_title="Travel Expenses", layout="wide")
 
-st.subheader("🌍 Travel Expenses")
-
-
+st.title("🌍 Travel Expenses")
 
 if df.empty:
     st.warning("No data found in 'cleaned_data'. Please upload a CSV via the Telegram bot.")
@@ -42,6 +40,7 @@ if df.empty:
 else:
     plot_total_spend(df.copy())
     plot_daily_average_per_category(df.copy())
+    plot_total_and_average_per_country(df.copy())
     plot_cumulative_burn(df.copy())
     chart_daily_avg_category_per_country(df.copy())
 

@@ -5,6 +5,7 @@ python-telegram-bot
 streamlit
 pandas
 plotly
+numpy
 
 # --- Google Sheets Integration ---
 gspread
