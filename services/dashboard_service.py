@@ -51,7 +51,6 @@ def get_data():
         return pd.DataFrame()
 
 def chart_daily_avg_category_per_country(df):
-def chart_daily_avg_category_per_country(df):
     chart_data = calculate_daily_avg_category_per_country(df)
     
     if not chart_data.empty:
