@@ -64,18 +64,17 @@ def chart_daily_avg_category_per_country(df):
             color="Country",
             barmode="group",
             text="Daily_Avg",
-            orientation='h', # <--- This makes it horizontal
+            orientation='h', 
             title="How much am I spending per day in each country?",
             labels={"Daily_Avg": "Avg Daily Spend (€)", "Category": ""},
             template="plotly_dark",
-            # This ensures countries are grouped consistently
             category_orders={"Category": sorted(chart_data["Category"].unique())}
         )
 
         fig.update_traces(
             textposition='outside', 
             texttemplate='€%{text:.1f}',
-            marker_line_width=0 # Cleaner look without borders
+            marker_line_width=0 
         )
         
         fig.update_layout(
@@ -90,14 +89,15 @@ def chart_daily_avg_category_per_country(df):
                 x=0.5,
                 title_text=""
             ),
-            # Give the left side (Y-axis) enough margin for category names
-            margin=dict(l=120, t=80, r=40), 
+            # 'l' is left margin - increase this if category names are very long
+            margin=dict(l=120, t=80, r=40, b=50), 
             dragmode=False,
-            height=500 # Slightly taller to prevent cramping
+            height=500 
         )
 
         fig.update_xaxes(fixedrange=True)
-        fig.update_yaxes(fixedrange=True, autoresize=True)
+        # Fixed the property name below to 'autorange'
+        fig.update_yaxes(fixedrange=True, autorange="reversed") 
 
         st.plotly_chart(fig, use_container_width=True)
     else:
