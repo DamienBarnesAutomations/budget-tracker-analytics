@@ -32,7 +32,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 st.set_page_config(page_title="Travel Expenses", layout="wide")
 
-st.title("🌍 Travel Expenses")
+st.subheader("🌍 Travel Expenses")
 
 
 

@@ -68,6 +68,12 @@ def chart_daily_avg_category_per_country(df):
         # Style the numbers on top of the bars
         fig.update_traces(textposition='outside')
         fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
+        # 1. Lock the Axes (Prevents pinching/zooming)
+        fig.update_xaxes(fixedrange=True)
+        fig.update_yaxes(fixedrange=True)
+
+# 2. Disable Dragging (Prevents selecting/panning)
+        fig.update_layout(dragmode=False)
         st.plotly_chart(fig, width='stretch')
     else:
         st.info("Add some expenses with Country and Category tags to see the chart!")
@@ -88,7 +94,12 @@ def plot_cumulative_burn(df):
     )
     # Add a "Budget Ceiling" dashed line
     fig.add_hline(y=TOTAL_BUDGET, line_dash="dash", line_color="red", annotation_text="Budget Limit")
-    
+    # 1. Lock the Axes (Prevents pinching/zooming)
+    fig.update_xaxes(fixedrange=True)
+    fig.update_yaxes(fixedrange=True)
+
+    # 2. Disable Dragging (Prevents selecting/panning)
+    fig.update_layout(dragmode=False)
     st.plotly_chart(fig, width='stretch', config={'displayModeBar': False})
     
 
@@ -146,7 +157,13 @@ def plot_daily_average_per_category(df):
         bar_data = calculate_average_daily_budget_per_country(df)
         fig_bar = px.bar(bar_data, x='Avg_Daily_Budget', y='Country', orientation='h', text_auto='.2f', template="plotly_dark", color='Avg_Daily_Budget', color_continuous_scale='Reds')
         fig_bar.update_layout(coloraxis_showscale=False, xaxis_title="", yaxis_title="")
-        st.plotly_chart(fig_bar, use_container_width=True, config={'displayModeBar': False})
+        # 1. Lock the Axes (Prevents pinching/zooming)
+        fig_bar.update_xaxes(fixedrange=True)
+        fig_bar.update_yaxes(fixedrange=True)
+
+        # 2. Disable Dragging (Prevents selecting/panning)
+        fig_bar.update_layout(dragmode=False)
+        st.plotly_chart(fig_bar, width='stretch', config={'displayModeBar': False})
 
 
 
