@@ -52,18 +52,12 @@ def get_data():
 
 def chart_daily_avg_category_per_country(df):
     chart_data = calculate_daily_avg_category_per_country(df)
-    
     if not chart_data.empty:
-        # Create a copy to avoid modifying the original dataframe
-        plot_df = chart_data.copy()
-        
-        # 1. Fix X-Axis Overlap: Replace spaces with HTML line breaks
-        plot_df["Category"] = plot_df["Category"].apply(lambda x: x.replace(" ", "<br>"))
-
         st.caption("Daily Average Spending per Category")
         
+        # Create the Grouped Bar Chart
         fig = px.bar(
-            plot_df,
+            chart_data,
             x="Category",
             y="Daily_Avg",
             color="Country",
@@ -75,36 +69,32 @@ def chart_daily_avg_category_per_country(df):
         )
 
         # Style the numbers on top of the bars
-        fig.update_traces(
-            textposition='outside', 
-            texttemplate='%{text:.1f}' # Simplified to 1 decimal to save space
-        )
-
+        fig.update_traces(textposition='outside')
         fig.update_layout(
-            uniformtext_minsize=7, 
+            uniformtext_minsize=8, 
             uniformtext_mode='hide',
-            # 2. Fix Legend: Center it and move it slightly higher
+            # Move legend to the top horizontal
             legend=dict(
-                orientation="h",
+                orientation="h",   # Horizontal orientation
                 yanchor="bottom",
-                y=1.05, 
+                y=1.02,            # Places it just above the plotting area
                 xanchor="center",
-                x=0.5,
-                title_text="" # Removes the "Country" word to save more space
+                x=0.5              # Centers the legend
             ),
-            # 3. Add Margin: Ensures the title/legend don't overlap
-            margin=dict(t=100, l=10, r=10, b=10),
-            dragmode=False,
-            height=450 # Set a fixed height to ensure readability
+            # Increase top margin slightly so the legend doesn't overlap the title
+            margin=dict(t=80) 
         )
 
-        fig.update_xaxes(fixedrange=True, tickangle=0)
+        # 1. Lock the Axes (Prevents pinching/zooming)
+        fig.update_xaxes(fixedrange=True)
         fig.update_yaxes(fixedrange=True)
 
+        # 2. Disable Dragging (Prevents selecting/panning)
+        fig.update_layout(dragmode=False)
+        
         st.plotly_chart(fig, use_container_width=True)
     else:
         st.info("Add some expenses with Country and Category tags to see the chart!")
-
 
 def chart_daily_avg_category_per_country2(df):
     chart_data = calculate_daily_avg_category_per_country(df)
