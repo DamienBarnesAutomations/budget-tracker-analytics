@@ -61,6 +61,54 @@ def chart_daily_avg_category_per_country(df):
             x="Category",
             y="Daily_Avg",
             color="Country",
+            barmode="group",
+            text="Daily_Avg",
+            title="How much am I spending per day in each country?",
+            labels={"Daily_Avg": "Avg Daily Spend (€)", "Category": "Expense Type"},
+            template="plotly_dark"
+        )
+
+        # Style the numbers on top of the bars
+        fig.update_traces(textposition='outside', texttemplate='%{text:.2f}')
+        fig.update_layout(
+            uniformtext_minsize=8, 
+            uniformtext_mode='hide',
+            # Move legend to the top horizontal
+            legend=dict(
+                orientation="h",
+                yanchor="bottom",
+                y=1.02,
+                xanchor="right",
+                x=1
+            ),
+            dragmode=False,
+            margin=dict(t=80) # Add top margin so legend doesn't hit title
+        )
+
+        # Lock the Axes and Force Horizontal Labels
+        fig.update_xaxes(
+            fixedrange=True, 
+            tickangle=0,      # <--- Forces labels to stay horizontal
+            automargin=True   # <--- Prevents long labels from clipping
+        )
+        fig.update_yaxes(fixedrange=True)
+
+        st.plotly_chart(fig, use_container_width=True)
+    else:
+        st.info("Add some expenses with Country and Category tags to see the chart!")
+
+
+def chart_daily_avg_category_per_country2(df):
+    chart_data = calculate_daily_avg_category_per_country(df)
+    if not chart_data.empty:
+        st.caption("Daily Average Spending per Category")
+        
+        # Create the Grouped Bar Chart
+        fig = px.bar(
+            chart_data,
+            x="Category",
+            y="Daily_Avg",
+            color="Country",
             barmode="group", # This puts the bars side-by-side
             text="Daily_Avg", # Shows the number on top of the bar
             title="How much am I spending per day in each country?",
