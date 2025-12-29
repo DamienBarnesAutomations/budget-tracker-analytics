@@ -91,7 +91,7 @@ def chart_daily_avg_category_per_country(df):
             ),
             # Increase top margin slightly for the legend
             # Increase left margin 'l' so names like 'Accommodation' aren't cut off
-            margin=dict(l=110, t=50, r=40, b=40), 
+            margin=dict(l=10, t=10, r=30, b=10), 
             dragmode=False,
             height=500 # Fixed height to prevent "squooshing"
         )
@@ -99,7 +99,7 @@ def chart_daily_avg_category_per_country(df):
         fig.update_xaxes(fixedrange=True)
         fig.update_yaxes(fixedrange=True)
 
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
     else:
         st.info("Add some expenses with Country and Category tags to see the chart!")
 
