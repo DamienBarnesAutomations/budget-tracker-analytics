@@ -1,4 +1,4 @@
-📊 Budget Tracker Analytics
+📊 Expense Reporting Pipelin
 
 Overview
 This project is a lightweight data pipeline and dashboard for analysing personal travel expenses. It ingests CSV exports from a mobile budgeting application, cleans and normalises the data, and presents it through a simple, read-only dashboard.
