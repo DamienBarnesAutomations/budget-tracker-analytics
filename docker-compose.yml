@@ -1,11 +1,9 @@
 services:
-  budget_tracker_analytics:
-    build: .
-    container_name: budget_tracker_analytics
-    # This is the missing piece! 
-    # Maps your computer's port 10000 to the container's 10000
-    ports:
-      - "10000:10000"
+  bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: budget_tracker_bot
     volumes:
       - .:/app
     env_file:
@@ -14,5 +12,32 @@ services:
     environment:
       - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
       - GOOGLE_SHEET_ID=${GOOGLE_SHEET_ID}
-      # Forces Python to flush logs to the console immediately
       - PYTHONUNBUFFERED=1
+    command: python app.py
+
+  api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: budget_tracker_api
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    restart: always
+    environment:
+      - GOOGLE_SHEET_ID=${GOOGLE_SHEET_ID}
+      - PYTHONUNBUFFERED=1
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: budget_tracker_frontend
+    ports:
+      - "3000:80"
+    restart: always
+    depends_on:
+      - api
