@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import logging
 from services.google_sheet_services import GoogleSheetsService
-import streamlit as st
 import plotly.express as px
 
 from transformations.data_transformations import (
@@ -29,15 +28,22 @@ TOTAL_BUDGET = 20000
 
 
 # Initialize Service
+service = None
 try:
-    service = GoogleSheetsService(JSON_KEY_PATH, SPREADSHEET_ID)
-    logger.info("GoogleSheetsService initialized successfully.")
+    if SPREADSHEET_ID:
+        service = GoogleSheetsService(JSON_KEY_PATH, SPREADSHEET_ID)
+        logger.info("GoogleSheetsService initialized successfully.")
+    else:
+        logger.warning("GOOGLE_SHEET_ID not set. service will be None.")
 except Exception as e:
     logger.error(f"Failed to initialize GoogleSheetsService: {e}")
-    st.error("Configuration Error: Check your service account key and Sheet ID.")
 
 #@st.cache_data(ttl=600)
 def get_data():
+    if not service:
+        logger.error("GoogleSheetsService not initialized.")
+        return pd.DataFrame()
+    
     logger.info("Attempting to fetch data from Google Sheets...")
     try:
         df = service.read_sheet_to_dataframe("Cleaned_Data")

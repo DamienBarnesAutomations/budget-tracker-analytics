@@ -1,6 +1,8 @@
 import gspread
 import logging
 import pandas as pd
+import os
+import json
 from google.oauth2.service_account import Credentials
 
 logger = logging.getLogger(__name__)
@@ -11,8 +13,25 @@ SCOPES = ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapi
 class GoogleSheetsService:
     def __init__(self, json_key_path, spreadsheet_id):
         self.spreadsheet_id = spreadsheet_id
-        # Authenticate once when the service is initialized
-        creds = Credentials.from_service_account_file(json_key_path, scopes=SCOPES)
+        
+        creds_json = os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON')
+        if creds_json:
+            # Production: credentials injected as environment variable
+            try:
+                creds_dict = json.loads(creds_json)
+                creds = Credentials.from_service_account_info(creds_dict, scopes=SCOPES)
+                logger.info("Loaded credentials from environment variable.")
+            except Exception as e:
+                logger.error(f"Failed to load credentials from environment variable: {e}")
+                raise e
+        else:
+            # Local development: credentials loaded from file
+            if not os.path.exists(json_key_path):
+                logger.error(f"Credentials file not found at: {json_key_path}")
+                raise FileNotFoundError(f"Credentials file not found at: {json_key_path}")
+            creds = Credentials.from_service_account_file(json_key_path, scopes=SCOPES)
+            logger.info(f"Loaded credentials from file: {json_key_path}")
+            
         self.client = gspread.authorize(creds)
         self.spreadsheet = self.client.open_by_key(spreadsheet_id)
 
