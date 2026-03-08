@@ -1,99 +1,100 @@
-# Expense Reporting Pipeline
+# Expense Reporting Pipeline & Dashboard
 
-This project is an automated ETL (Extract, Transform, Load) pipeline designed to convert raw travel expense exports into a live analytics dashboard. It solves the problem of manual expense tracking by allowing users to upload a CSV file via a Telegram bot, which automatically triggers data cleaning and updates a Google Sheets backend for a Streamlit dashboard. It demonstrates the integration of messaging APIs, cloud spreadsheets, and data visualization tools into a cohesive personal finance tool for technical portfolio demonstration.
+## 1. What this project is
+This project is an automated ETL (Extract, Transform, Load) pipeline that converts raw CSV expense exports into a structured, interactive financial dashboard. It solves the friction of manual expense tracking by using a Telegram bot as the ingestion interface and Google Sheets as a low-cost, human-readable data store. The system demonstrates a decoupled architecture suitable for personal or small-team financial monitoring, providing real-time budget burn rates and categorical spending analysis.
 
-## Architecture
-
+## 2. Architecture
 ```mermaid
 graph TD
-    A[User] -->|Upload CSV| B(Telegram Bot)
-    B -->|Download| C[Local Storage]
-    C --> D{Orchestrator}
-    D -->|Clean/Transform| E[Pandas Engine]
-    E -->|Write Tabs| F[Google Sheets API]
-    F -->|Persistence| G[(Google Sheet)]
-    G -->|Fetch Data| H[Streamlit Dashboard]
-    H -->|Visualize| I[User]
+    User([User]) -->|Upload CSV| Telegram[Telegram Bot]
+    Telegram -->|Trigger| BotSvc[Bot Service: Python]
+    BotSvc -->|Clean/Transform| Pandas[Pandas Engine]
+    Pandas -->|Sync| GSheets[(Google Sheets API)]
+    
+    subgraph "Visualization Layer"
+        APISvc[API Service: FastAPI] -->|Read| GSheets
+        VueApp[Frontend: Vue 3] -->|Fetch JSON| APISvc
+        VueApp -->|Render| ECharts[ECharts]
+    end
+    
+    Dashboard([Dashboard User]) -->|View| VueApp
 ```
 
-## Tech Stack
+## 3. Tech stack
 
 | Component | Technology | Purpose |
 | :--- | :--- | :--- |
-| **Ingestion** | Telegram Bot API | User interface for file uploads and status updates. |
-| **Processing** | Pandas | Data cleaning, filtering, and metric calculation. |
-| **Storage** | Google Sheets API | Intermediate data warehouse and persistence layer. |
-| **Visualization** | Streamlit | Interactive web dashboard for data exploration. |
-| **Charts** | Plotly | Dynamic, mobile-responsive data visualizations. |
-| **Deployment** | Docker | Containerization of the bot and dashboard services. |
+| **Ingestion** | Python-Telegram-Bot | Interface for mobile data entry and file uploads. |
+| **ETL Engine** | Pandas | Data cleaning, type conversion, and categorical aggregation. |
+| **Primary Storage** | Google Sheets | Acts as both a database and a manual data entry fallback. |
+| **Backend API** | FastAPI | High-performance asynchronous API for data retrieval. |
+| **Frontend** | Vue 3 + Vite | Reactive single-page application for the dashboard. |
+| **Visualizations** | Apache ECharts | Interactive rendering of complex financial charts. |
+| **Orchestration** | Docker Compose | Management of the bot, API, and frontend services. |
 
-## Project Structure
-
+## 4. Project structure
 ```text
 .
-├── app.py                     # Entry point for the Telegram bot service
-├── dashboard.py               # Main Streamlit application file
-├── docker-compose.yml         # Orchestration for multi-container deployment
-├── Dockerfile                 # Container definition for the unified service
+├── app.py                      # Telegram bot entry point and polling loop.
+├── backend/
+│   ├── main.py                 # FastAPI application and REST endpoints.
+│   ├── requirements.txt        # Python dependencies for the API service.
+│   └── Dockerfile              # Container definition for the FastAPI service.
+├── frontend/
+│   ├── src/
+│   │   ├── components/         # Vue components (Summary, Charts, Table).
+│   │   ├── api.js              # Axios configuration for backend communication.
+│   │   └── App.vue             # Main frontend entry point and layout.
+│   └── Dockerfile              # Multi-stage build for Vue/Nginx.
 ├── handlers/
-│   ├── file_handler.py        # Coordinates processing and cloud upload logic
-│   └── telegram_handler.py    # Manages bot commands and file downloads
+│   ├── file_handler.py         # Orchestrates ETL pipeline from bot triggers.
+│   └── telegram_handler.py     # Logic for handling Telegram messages and files.
 ├── processors/
-│   └── file_processor.py      # Entry point for the data transformation layer
+│   └── file_processor.py       # Manages CSV loading and transformation sequence.
 ├── services/
-│   ├── dashboard_service.py   # Business logic for dashboard metrics and charts
-│   └── google_sheet_services.py # Wrapper for Google Sheets API operations
+│   ├── google_sheet_services.py # Wrapper for gspread and Google Auth.
+│   └── dashboard_service.py    # Business logic for fetching data from Sheets.
 ├── transformations/
-│   └── data_transformations.py # Core logic for cleaning and calculating metrics
-├── requirements.txt           # Python project dependencies
-└── run.sh                     # Startup script to launch bot and dashboard concurrently
+│   └── data_transformations.py # Core Pandas logic for financial metrics.
+├── docker-compose.yml          # Service definitions for bot, api, and frontend.
+└── requirements.txt            # Python dependencies for the bot service.
 ```
 
-## Quick Start
-
-1. **Clone the repository:**
-   ```bash
-   git clone <repository-url>
-   cd expense-reporting-pipeline
-   ```
-
-2. **Configure environment:**
-   Create a `.env` file in the root directory with the following variables:
-   ```text
+## 5. Quick start
+1. **Prepare Credentials**: Place your Google Cloud `service_account.json` in the root directory.
+2. **Configure Environment**: Create a `.env` file in the root:
+   ```env
    TELEGRAM_TOKEN=your_bot_token
    GOOGLE_SHEET_ID=your_spreadsheet_id
    ```
-   Place your `service_account.json` (Google Cloud credentials) in the root directory.
-
-3. **Launch the pipeline:**
+3. **Launch Stack**:
    ```bash
    docker-compose up --build
    ```
+4. **Access**:
+   - Dashboard: `http://localhost:3000`
+   - API Docs: `http://localhost:8000/docs`
 
-## How it Works
+## 6. How it works
+1. **Ingestion**: The user sends a CSV to the Telegram bot (`app.py`). The `handle_document` function in `handlers/telegram_handler.py` downloads the file and passes the path to the orchestrator.
+2. **Transformation**: `orchestrate_file_process` in `handlers/file_handler.py` calls `load_and_process_data` (`processors/file_processor.py`). This invokes `process_main_data` in `transformations/data_transformations.py`, which cleans date formats, handles currency symbols, and filters excluded categories like "Flights" (see `EXCLUDE_CATEGORY` in `data_transformations.py`).
+3. **Persistence**: The processed DataFrame is uploaded to the "Cleaned_Data" tab via `write_dataframe_to_sheet` in `services/google_sheet_services.py`.
+4. **Data Serving**: The FastAPI app (`backend/main.py`) calls `get_data()` in `services/dashboard_service.py` to fetch the sheet contents. It then applies domain-specific transformations (e.g., `calculate_summary` logic) to return structured JSON.
+5. **Visualization**: The Vue frontend fetches this JSON via `api.js` and updates the reactive state in `DashboardShell.vue`, which propagates data to specialized ECharts components like `BurnTrendCharts.vue`.
 
-1. **Ingestion**: The Telegram bot (`app.py`) listens for documents via `handle_document` in `handlers/telegram_handler.py`. It validates the file extension and saves the raw CSV to a local directory.
-2. **Orchestration**: Once saved, `orchestrate_file_process` in `handlers/file_handler.py` is triggered. It calls the processor to transform the file and then uses the `GoogleSheetsService` to upload the result.
-3. **Transformation**: The `load_and_process_data` function in `processors/file_processor.py` reads the CSV and applies `process_main_data` from `transformations/data_transformations.py`. This step cleans dates, normalizes currency, and filters out excluded categories like "Flights".
-4. **Cloud Load**: Data is written to Google Sheets using `write_dataframe_to_sheet` in `services/google_sheet_services.py`, which clears existing tabs and updates them with the new cleaned data.
-5. **Visualization**: The Streamlit dashboard (`dashboard.py`) calls `get_data` from `services/dashboard_service.py`, which pulls the latest cleaned records from Google Sheets for rendering in Plotly charts.
+## 7. Design decisions
+- **Google Sheets as a Persistence Layer**: Instead of a relational database, Google Sheets was chosen to allow the user to manually correct or audit data without a custom admin UI. Evidence: `services/google_sheet_services.py` and `services/dashboard_service.py` fetching from specific tab names.
+- **Decoupled Transformation Logic**: All Pandas logic is isolated from the IO handlers. This allows the same transformation functions to be used by both the bot's upload process and the API's read process. Evidence: `transformations/data_transformations.py` is imported by both `processors/file_processor.py` and `backend/main.py`.
+- **Logarithmic Scaling for Multi-Country Spending**: In the country comparison charts, spending often varies by orders of magnitude. The system implements logarithmic axes to maintain visibility for smaller-scale country stays. Evidence: `dashboard_service.py` (legacy) and the implementation of `totalOption` in `CountryBarCharts.vue`.
+- **Multi-Stage Docker Builds**: To minimize production image size and security surface area, the frontend uses a multi-stage build to compile Vue source into static assets served by Nginx. Evidence: `frontend/Dockerfile`.
 
-## Design Decisions
+## 8. What this demonstrates
+- **Asynchronous Python Development**: Implementation of a non-blocking API layer using FastAPI in `backend/main.py`.
+- **Complex Data Transformations**: Handling of dirty financial data, currency cleaning, and multi-dimensional aggregations in `transformations/data_transformations.py`.
+- **Container Orchestration**: Managing a heterogeneous stack (Python, Node/Nginx, Google APIs) via `docker-compose.yml`.
+- **Modern Frontend Architecture**: Building a reactive, component-based dashboard with Vue 3 Composition API and optimized chart rendering in `frontend/src/components/`.
 
-- **Google Sheets as a Data Warehouse**: Instead of a traditional SQL database, Google Sheets was chosen to allow manual auditing of cleaned data. This is implemented in `services/google_sheet_services.py` through the `GoogleSheetsService` class.
-- **Unified Process Execution**: Both the bot and the dashboard are packaged in a single Docker image and executed via `run.sh`. This simplifies deployment by avoiding the overhead of managing two separate services for a low-traffic personal tool.
-- **Calculated View Decoupling**: Metrics like "Daily Average per Country" are calculated on-the-fly in `transformations/data_transformations.py` (e.g., `calculate_average_daily_budget_per_country`) rather than stored. This ensures the dashboard reflects the most recent transformation logic without full data re-import.
-- **Mobile-Responsive UI**: The dashboard is explicitly configured with `layout="centered"` and `initial_sidebar_state="collapsed"` in `dashboard.py` to optimize the viewing experience on smartphones.
-
-## What this Demonstrates
-
-- **ETL Pipeline Design**: Orchestration of data flows from ingestion to visualization. Evidence: `handlers/file_handler.py`.
-- **API Integration**: Production-ready implementation of third-party APIs (Telegram, Google) with proper authentication. Evidence: `services/google_sheet_services.py`.
-- **Data Engineering Fundamentals**: Implementation of data cleaning, type conversion, and outlier filtering using Pandas. Evidence: `transformations/data_transformations.py`, specifically `process_main_data`.
-- **Cloud-Native Deployment**: Use of Docker and environment-based configuration for portable service execution. Evidence: `Dockerfile` and `docker-compose.yml`.
-
-## Limitations / Out of scope
-
-- **Single User Constraint**: The architecture uses a global `GOOGLE_SHEET_ID` defined in `.env`, meaning it supports one active spreadsheet per deployment.
-- **Stateless Ingestion**: The pipeline overwrites the Google Sheet tabs on every upload via `worksheet.clear()` in `services/google_sheet_services.py`. It does not support incremental updates.
-- **Memory Management**: `file_processor.py` loads entire CSVs into memory; while sufficient for personal expense tracking, enterprise-scale datasets would require a chunking strategy.
+## 9. Limitations / Out of scope
+- **Authentication**: The dashboard (`http://localhost:3000`) does not have an authentication layer. It is intended for deployment within a private network or behind a VPN.
+- **Google Sheets API Quotas**: Since every dashboard refresh triggers a read from Google Sheets, the project is subject to API rate limits. It is not suitable for high-traffic public use without an intermediate caching layer (e.g., Redis).
+- **Single-User CSV Processing**: The pipeline assumes a consistent CSV schema (defined in `data_transformations.py`). It does not currently support multiple differing bank export formats simultaneously.
