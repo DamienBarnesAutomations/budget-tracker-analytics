@@ -50,6 +50,7 @@ const cumulativeOption = computed(() => {
     series: [{
       name: 'Cumulative Spend',
       type: 'line',
+      showSymbol: false,
       areaStyle: { opacity: 0.3, color: '#00CC96' },
       data: props.data.cumulative.map(i => i.Cumulative_Total),
       itemStyle: { color: '#00CC96' },
@@ -73,6 +74,7 @@ const comparisonOption = computed(() => {
     return {
       name: country,
       type: 'line',
+      showSymbol: false,
       data: countryData.map(i => [i.Day_Num, i.Cumulative_Total]),
       smooth: true,
       lineStyle: { width: 3 }
