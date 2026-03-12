@@ -1,7 +1,7 @@
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 h-full">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 h-full">
     <!-- Combined Hero Card: Total Spent & Budget Exhaustion -->
-    <div v-if="summary" class="lg:col-span-2 glass-card">
+    <div v-if="summary" class="md:col-span-2 glass-card">
       <div class="flex flex-col md:flex-row md:items-end justify-between mb-4 md:mb-6">
         <div>
           <h3 class="text-muted mb-1 font-medium text-xs md:text-sm tracking-wider uppercase">Total Spent</h3>
