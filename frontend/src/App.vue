@@ -129,15 +129,17 @@ body {
   .md\:justify-start { justify-content: flex-start; }
   .col-span-1 { grid-column: span 1 / span 1; }
   .md\:col-span-2 { grid-column: span 2 / span 2; }
+  .md\:col-span-3 { grid-column: span 3 / span 3; }
   .md\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-}
+  }
 
-@media (min-width: 1024px) {
+  @media (min-width: 1024px) {
   .bento-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .lg\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .lg\:col-span-2 { grid-column: span 2 / span 2; }
   .lg\:col-span-3 { grid-column: span 3 / span 3; }
   .lg\:row-span-2 { grid-row: span 2 / span 2; }
+  }
 }
 </style>
