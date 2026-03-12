@@ -34,6 +34,7 @@ body {
 
 /* Base grid and spacing */
 .grid { display: grid; }
+.w-full { width: 100%; }
 .bento-grid {
   display: grid;
   grid-template-columns: repeat(1, minmax(0, 1fr));
