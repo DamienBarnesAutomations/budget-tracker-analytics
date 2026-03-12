@@ -32,56 +32,68 @@ app.add_middleware(
 
 @app.get("/api/summary")
 async def get_summary():
-    df = get_data()
-    if df.empty:
-        return {"error": "No data found"}
-    
-    # Identify flight vs ground expenses
-    flights_spent = float(df[df['Category'] == 'Flights']['Amount'].sum())
-    ground_df = df[df['Category'] != 'Flights'].copy()
-    ground_spent = float(ground_df['Amount'].sum())
-    
-    total_spent = float(df['Amount'].sum())
-    total_days = int(ground_df['Date'].nunique())
-    daily_avg = ground_spent / total_days if total_days > 0 else 0
-    
-    remaining = float(TOTAL_BUDGET - total_spent)
-    percent_used = min(total_spent / TOTAL_BUDGET, 1.0)
-    days_remaining = int(remaining / daily_avg) if daily_avg > 0 else 0
-    
-    # NEW METRICS
-    # 1. Top Category (excluding Flights)
-    top_cat_df = ground_df.groupby('Category')['Amount'].sum().reset_index()
-    top_cat = top_cat_df.sort_values('Amount', ascending=False).iloc[0].to_dict() if not top_cat_df.empty else None
-    
-    # 2. Weekend vs Weekday
-    weekend_df = calculate_weekend_vs_weekday(ground_df)
-    weekend_stats = weekend_df.to_dict(orient="records") if not weekend_df.empty else []
-    
-    # 3. Country Insights (Most/Least expensive)
-    country_budgets = calculate_average_daily_budget_per_country(df.copy())
-    # Filter for countries with at least 3 days to avoid outliers
-    stable_countries = country_budgets[country_budgets['Total_Days'] >= 3]
-    if stable_countries.empty: stable_countries = country_budgets
-    
-    most_expensive = stable_countries.sort_values('Avg_Daily_Budget', ascending=False).iloc[0].to_dict() if not stable_countries.empty else None
-    cheapest = stable_countries.sort_values('Avg_Daily_Budget', ascending=True).iloc[0].to_dict() if not stable_countries.empty else None
+    try:
+        df = get_data()
+        if df.empty:
+            return {"error": "No data found"}
+        
+        # Ensure correct types for calculations
+        df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
+        df['Amount'] = pd.to_numeric(df['Amount'], errors='coerce').fillna(0)
+        df = df.dropna(subset=['Date'])
+        
+        # Identify flight vs ground expenses
+        flights_spent = float(df[df['Category'] == 'Flights']['Amount'].sum())
+        ground_df = df[df['Category'] != 'Flights'].copy()
+        ground_spent = float(ground_df['Amount'].sum())
+        
+        total_spent = float(df['Amount'].sum())
+        total_days = int(ground_df['Date'].nunique())
+        daily_avg = ground_spent / total_days if total_days > 0 else 0
+        
+        remaining = float(TOTAL_BUDGET - total_spent)
+        percent_used = min(total_spent / TOTAL_BUDGET, 1.0)
+        days_remaining = int(remaining / daily_avg) if daily_avg > 0 else 0
+        
+        # NEW METRICS
+        # 1. Top Category (excluding Flights)
+        top_cat_df = ground_df.groupby('Category')['Amount'].sum().reset_index()
+        top_cat = top_cat_df.sort_values('Amount', ascending=False).iloc[0].to_dict() if not top_cat_df.empty else None
+        
+        # 2. Weekend vs Weekday
+        weekend_df = calculate_weekend_vs_weekday(ground_df)
+        weekend_stats = weekend_df.to_dict(orient="records") if not weekend_df.empty else []
+        
+        # 3. Country Insights (Most/Least expensive)
+        # Use a copy of the dataframe with converted types
+        country_budgets = calculate_average_daily_budget_per_country(df.copy())
+        # Filter for countries with at least 3 days to avoid outliers
+        stable_countries = country_budgets[country_budgets['Total_Days'] >= 3]
+        if stable_countries.empty: stable_countries = country_budgets
+        
+        most_expensive = stable_countries.sort_values('Avg_Daily_Budget', ascending=False).iloc[0].to_dict() if not stable_countries.empty else None
+        cheapest = stable_countries.sort_values('Avg_Daily_Budget', ascending=True).iloc[0].to_dict() if not stable_countries.empty else None
 
-    return {
-        "total_spent": total_spent,
-        "flights_spent": flights_spent,
-        "ground_spent": ground_spent,
-        "daily_avg": daily_avg,
-        "remaining": remaining,
-        "days": total_days,
-        "percent_used": percent_used,
-        "days_remaining": days_remaining,
-        "total_budget": TOTAL_BUDGET,
-        "top_category": top_cat,
-        "weekend_stats": weekend_stats,
-        "most_expensive_country": most_expensive,
-        "cheapest_country": cheapest
-    }
+        return {
+            "total_spent": total_spent,
+            "flights_spent": flights_spent,
+            "ground_spent": ground_spent,
+            "daily_avg": daily_avg,
+            "remaining": remaining,
+            "days": total_days,
+            "percent_used": percent_used,
+            "days_remaining": days_remaining,
+            "total_budget": TOTAL_BUDGET,
+            "top_category": top_cat,
+            "weekend_stats": weekend_stats,
+            "most_expensive_country": most_expensive,
+            "cheapest_country": cheapest
+        }
+    except Exception as e:
+        print(f"Error in get_summary: {e}")
+        import traceback
+        traceback.print_exc()
+        return {"error": str(e)}
 
 @app.get("/api/charts/allocation")
 async def get_allocation_chart():
