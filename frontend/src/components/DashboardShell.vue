@@ -1,28 +1,48 @@
 <template>
-  <div class="min-h-screen bg-[#121212] text-white p-4 md:p-8 my-app-dark">
-    <div class="max-w-6xl mx-auto">
+  <div class="min-h-screen text-white p-4 md:p-8 my-app-dark">
+    <div class="max-w-7xl mx-auto">
       <header class="mb-8 text-center md:text-left">
         <h1 class="text-4xl font-bold flex items-center justify-center md:justify-start gap-2">
-          <span>🌍</span> Travel Expenses
+          <span>🌍</span> <span class="text-gradient">Travel Expenses</span>
         </h1>
+        <p class="text-muted mt-2">Your interactive budget dashboard</p>
       </header>
 
-      <div v-if="loading" class="flex flex-col items-center justify-center h-64">
+      <div v-if="loading" class="flex flex-col items-center justify-center h-64 glass-card">
         <ProgressSpinner />
-        <p class="mt-4 text-gray-400">Loading data from Google Sheets...</p>
+        <p class="mt-4 text-muted">Loading data from Google Sheets...</p>
       </div>
 
-      <div v-else-if="error" class="p-4 bg-red-900/30 border border-red-500 rounded-lg text-red-200">
+      <div v-else-if="error" class="p-4 bg-red-900/30 border border-red-500 rounded-lg text-red-200 glass-card">
         {{ error }}
       </div>
 
-      <div v-else>
-        <SummaryMetrics :summary="summary" />
-        <AllocationPieChart :data="allocation" />
-        <CountryBarCharts :data="countryCharts" />
-        <BurnTrendCharts :data="trends" />
-        <CategoryBreakdownChart :data="categories" />
-        <TransactionTable :transactions="transactions" />
+      <div v-else class="bento-grid">
+        <!-- Top row: Summary Metrics and Allocation Pie Chart -->
+        <div class="md:col-span-2 lg:col-span-2">
+          <SummaryMetrics :summary="summary" />
+        </div>
+        <div class="col-span-1 glass-card flex flex-col justify-center">
+          <AllocationPieChart :data="allocation" />
+        </div>
+
+        <!-- Middle row: Burn Trend Charts -->
+        <div class="md:col-span-2 lg:col-span-3">
+          <BurnTrendCharts :data="trends" />
+        </div>
+        
+        <!-- Bottom section: Country charts and Category breakdown -->
+        <div class="md:col-span-2 lg:col-span-2">
+          <CountryBarCharts :data="countryCharts" />
+        </div>
+        <div class="col-span-1 glass-card flex flex-col justify-center">
+          <CategoryBreakdownChart :data="categories" />
+        </div>
+
+        <!-- Transactions Full Width -->
+        <div class="md:col-span-2 lg:col-span-3 glass-card">
+          <TransactionTable :transactions="transactions" />
+        </div>
       </div>
     </div>
   </div>

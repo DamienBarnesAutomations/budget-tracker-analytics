@@ -1,7 +1,7 @@
 <template>
-  <div class="mb-6">
-    <h3 class="text-xl mb-2 text-gray-300">Daily Budget Allocation</h3>
-    <v-chart class="chart" :option="option" autoresize />
+  <div class="h-full flex flex-col">
+    <h3 class="text-lg font-semibold text-white mb-4">Daily Budget Allocation</h3>
+    <v-chart class="chart flex-grow" :option="option" autoresize />
   </div>
 </template>
 
@@ -35,27 +35,36 @@ const option = computed(() => {
   return {
     tooltip: {
       trigger: 'item',
-      formatter: '{b}: €{c} ({d}%)'
+      formatter: '{b}: €{c} ({d}%)',
+      backgroundColor: 'rgba(15, 23, 42, 0.9)',
+      borderColor: 'rgba(255,255,255,0.1)',
+      textStyle: { color: '#fff' }
     },
     series: [
       {
         name: 'Daily Budget Allocation',
         type: 'pie',
-        radius: ['40%', '70%'],
+        radius: ['50%', '80%'],
         avoidLabelOverlap: false,
         itemStyle: {
-          borderRadius: 10,
-          borderColor: '#1e1e1e',
+          borderRadius: 8,
+          borderColor: 'rgba(30, 41, 59, 1)',
           borderWidth: 2
         },
         label: {
-          show: true,
-          position: 'outside',
-          formatter: '{b} {d}%',
-          color: '#ccc'
+          show: false,
+          position: 'center'
+        },
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: 16,
+            fontWeight: 'bold',
+            color: '#fff'
+          }
         },
         labelLine: {
-          show: true
+          show: false
         },
         data: props.data.map(item => ({
           name: item.Category,
@@ -71,6 +80,7 @@ const option = computed(() => {
 
 <style scoped>
 .chart {
-  height: 400px;
+  min-height: 250px;
+  width: 100%;
 }
 </style>

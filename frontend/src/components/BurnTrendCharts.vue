@@ -1,11 +1,11 @@
 <template>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-    <div class="bg-[#1e1e1e] p-4 rounded-lg shadow">
-      <h3 class="text-lg mb-2 text-gray-400">📈 Total Spending Over Time</h3>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 h-full">
+    <div class="glass-card">
+      <h3 class="text-lg font-semibold text-white mb-4">📈 Total Spending Over Time</h3>
       <v-chart class="chart" :option="cumulativeOption" autoresize />
     </div>
-    <div class="bg-[#1e1e1e] p-4 rounded-lg shadow">
-      <h3 class="text-lg mb-2 text-gray-400">📈 Cumulative Spend Comparison</h3>
+    <div class="glass-card">
+      <h3 class="text-lg font-semibold text-white mb-4">📈 Cumulative Spend Comparison</h3>
       <v-chart class="chart" :option="comparisonOption" autoresize />
     </div>
   </div>
@@ -43,21 +43,27 @@ const cumulativeOption = computed(() => {
   if (!props.data || !props.data.cumulative) return {};
 
   return {
-    tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+    tooltip: { trigger: 'axis', axisPointer: { type: 'cross' }, backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'rgba(255,255,255,0.1)', textStyle: { color: '#fff' } },
     grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
     xAxis: { type: 'category', data: props.data.cumulative.map(i => i.Date), show: false },
-    yAxis: { type: 'value', splitLine: { lineStyle: { color: '#333' } } },
+    yAxis: { type: 'value', splitLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } }, axisLabel: { color: '#94a3b8' } },
     series: [{
       name: 'Cumulative Spend',
       type: 'line',
-      areaStyle: { opacity: 0.3, color: '#00CC96' },
+      areaStyle: {
+        opacity: 0.3,
+        color: {
+          type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+          colorStops: [{ offset: 0, color: '#3b82f6' }, { offset: 1, color: 'rgba(59, 130, 246, 0)' }]
+        }
+      },
       data: props.data.cumulative.map(i => i.Cumulative_Total),
-      itemStyle: { color: '#00CC96' },
-      lineStyle: { width: 3 },
+      itemStyle: { color: '#3b82f6' },
+      lineStyle: { width: 3, color: '#3b82f6' },
       markLine: {
         symbol: 'none',
-        label: { position: 'end', formatter: 'Budget' },
-        data: [{ yAxis: 20000, lineStyle: { color: '#FF4B4B', type: 'dashed' } }]
+        label: { position: 'end', formatter: 'Budget', color: '#f87171' },
+        data: [{ yAxis: 20000, lineStyle: { color: '#ef4444', type: 'dashed' } }]
       }
     }],
     backgroundColor: 'transparent'
@@ -80,11 +86,11 @@ const comparisonOption = computed(() => {
   });
 
   return {
-    tooltip: { trigger: 'axis' },
-    legend: { bottom: 0, textStyle: { color: '#ccc' } },
+    tooltip: { trigger: 'axis', backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'rgba(255,255,255,0.1)', textStyle: { color: '#fff' } },
+    legend: { bottom: 0, textStyle: { color: '#94a3b8' }, itemGap: 20 },
     grid: { left: '3%', right: '4%', bottom: '15%', containLabel: true },
-    xAxis: { type: 'value', name: 'Days', splitLine: { show: false } },
-    yAxis: { type: 'value', splitLine: { lineStyle: { color: '#333' } } },
+    xAxis: { type: 'value', name: 'Days', nameTextStyle: {color: '#94a3b8'}, splitLine: { show: false }, axisLabel: { color: '#94a3b8' } },
+    yAxis: { type: 'value', splitLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } }, axisLabel: { color: '#94a3b8' } },
     series: series,
     backgroundColor: 'transparent'
   };
