@@ -31,11 +31,13 @@
           <BurnTrendCharts :data="trends" />
         </div>
         
-        <!-- Bottom section: Country charts and Category breakdown -->
-        <div class="col-span-1 md:col-span-2 lg:col-span-2">
+        <!-- Bottom section: Country charts -->
+        <div class="col-span-1 md:col-span-2 lg:col-span-3">
           <CountryBarCharts :data="countryCharts" />
         </div>
-        <div class="col-span-1 glass-card flex flex-col justify-center">
+
+        <!-- Full width breakdown chart -->
+        <div class="col-span-1 md:col-span-2 lg:col-span-3 glass-card">
           <CategoryBreakdownChart :data="categories" />
         </div>
 

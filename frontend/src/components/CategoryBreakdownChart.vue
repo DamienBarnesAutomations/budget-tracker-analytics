@@ -42,7 +42,7 @@ const option = computed(() => {
     return {
       name: country,
       type: 'bar',
-      label: { show: true, position: 'right', formatter: '{c}', color: '#fff' },
+      label: { show: true, position: 'top', formatter: '{c}', color: '#fff', fontSize: 10 },
       itemStyle: { borderRadius: 4, color: colors[index % colors.length] },
       data: categories.map(cat => {
         const item = props.data.find(i => i.Country === country && i.Category === cat);
@@ -52,11 +52,31 @@ const option = computed(() => {
   });
 
   return {
-    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'rgba(255,255,255,0.1)', textStyle: { color: '#fff' } },
+    tooltip: { 
+      trigger: 'axis', 
+      axisPointer: { type: 'shadow' }, 
+      backgroundColor: 'rgba(15, 23, 42, 0.9)', 
+      borderColor: 'rgba(255,255,255,0.1)', 
+      textStyle: { color: '#fff' } 
+    },
     legend: { bottom: 0, textStyle: { color: '#94a3b8' } },
-    grid: { left: '3%', right: '10%', bottom: '15%', containLabel: true },
-    xAxis: { type: 'value', name: 'Avg Daily Spend (€)', nameTextStyle: {color: '#94a3b8'}, splitLine: { show: false }, axisLabel: { color: '#94a3b8' } },
-    yAxis: { type: 'category', data: categories, axisLabel: { color: '#94a3b8' } },
+    grid: { left: '3%', right: '4%', bottom: '20%', containLabel: true },
+    xAxis: { 
+      type: 'category', 
+      data: categories, 
+      axisLabel: { 
+        color: '#94a3b8',
+        rotate: 35,
+        fontSize: 10
+      } 
+    },
+    yAxis: { 
+      type: 'value', 
+      name: 'Avg Daily Spend (€)', 
+      nameTextStyle: {color: '#94a3b8', padding: [0, 0, 10, 0]}, 
+      splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } }, 
+      axisLabel: { color: '#94a3b8' } 
+    },
     series: series,
     backgroundColor: 'transparent'
   };
