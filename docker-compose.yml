@@ -35,9 +35,13 @@ services:
     build:
       context: .
       dockerfile: frontend/Dockerfile
+      args:
+        - VITE_API_BASE_URL=${VITE_API_BASE_URL}
     container_name: budget_tracker_frontend
     ports:
       - "3000:80"
     restart: always
     depends_on:
       - api
+    environment:
+      - VITE_API_BASE_URL=${VITE_API_BASE_URL}

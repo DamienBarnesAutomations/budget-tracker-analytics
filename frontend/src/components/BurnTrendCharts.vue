@@ -79,6 +79,7 @@ const comparisonOption = computed(() => {
     return {
       name: country,
       type: 'line',
+      showSymbol: false,
       data: countryData.map(i => [i.Day_Num, i.Cumulative_Total]),
       smooth: true,
       lineStyle: { width: 3 }
