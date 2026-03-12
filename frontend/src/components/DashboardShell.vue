@@ -18,16 +18,16 @@
       </div>
 
       <div v-else class="bento-grid">
-        <!-- Top row: Summary Metrics and Allocation Pie Chart -->
-        <div class="col-span-1 md:col-span-2 lg:col-span-2">
+        <!-- Full Width Header: Summary Metrics -->
+        <div class="col-span-1 md:col-span-2 lg:col-span-3">
           <SummaryMetrics :summary="summary" />
         </div>
+
+        <!-- Middle row: Allocation Pie Chart and Burn Trend Charts -->
         <div class="col-span-1 glass-card flex flex-col justify-center">
           <AllocationPieChart :data="allocation" />
         </div>
-
-        <!-- Middle row: Burn Trend Charts -->
-        <div class="col-span-1 md:col-span-2 lg:col-span-3">
+        <div class="col-span-1 md:col-span-1 lg:col-span-2">
           <BurnTrendCharts :data="trends" />
         </div>
         
