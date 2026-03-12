@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen text-white p-4 md:p-8 my-app-dark">
-    <div class="max-w-7xl mx-auto">
+    <div class="w-full mx-auto">
       <header class="mb-8 text-center md:text-left">
         <h1 class="text-4xl font-bold flex items-center justify-center md:justify-start gap-2">
           <span>🌍</span> <span class="text-gradient">Travel Expenses</span>
