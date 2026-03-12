@@ -68,7 +68,7 @@ body {
 .mt-2 { margin-top: 0.5rem; }
 .font-medium { font-weight: 500; }
 .text-blue-400 { color: #60a5fa; }
-.max-w-7xl { max-width: 80rem; }
+.max-w-7xl { max-width: 100rem; }
 .mx-auto { margin-left: auto; margin-right: auto; }
 .text-4xl { font-size: 1.875rem; line-height: 2.25rem; }
 .justify-center { justify-content: center; }

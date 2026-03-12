@@ -34,7 +34,12 @@ const props = defineProps({
 const option = computed(() => {
   if (!props.data || props.data.length === 0) return {};
 
-  const categories = [...new Set(props.data.map(i => i.Category))];
+  const catTotals = props.data.reduce((acc, i) => {
+    acc[i.Category] = (acc[i.Category] || 0) + i.Daily_Avg;
+    return acc;
+  }, {});
+  
+  const categories = Object.keys(catTotals).sort((a, b) => catTotals[b] - catTotals[a]);
   const countries = [...new Set(props.data.map(i => i.Country))];
   
   const series = countries.map((country, index) => {
