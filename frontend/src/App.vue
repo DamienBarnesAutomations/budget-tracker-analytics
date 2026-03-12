@@ -121,6 +121,7 @@ body {
   .glass-card h3 { font-size: 1.125rem; margin-bottom: 1rem; }
   .bento-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .md\:p-8 { padding: 2rem; }
   .md\:text-left { text-align: left; }
   .md\:justify-start { justify-content: flex-start; }
@@ -130,6 +131,7 @@ body {
 
 @media (min-width: 1024px) {
   .bento-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .lg\:col-span-2 { grid-column: span 2 / span 2; }
   .lg\:col-span-3 { grid-column: span 3 / span 3; }
   .lg\:row-span-2 { grid-row: span 2 / span 2; }
