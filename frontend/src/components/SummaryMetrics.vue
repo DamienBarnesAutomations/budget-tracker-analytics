@@ -1,3 +1,4 @@
+<template>
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 h-full">
     <!-- Combined Hero Card: Total Spent & Budget Exhaustion -->
     <div v-if="summary" class="lg:col-span-2 glass-card">
