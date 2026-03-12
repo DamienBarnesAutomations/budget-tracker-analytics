@@ -42,14 +42,43 @@ const totalOption = computed(() => {
   const sorted = [...props.data.total].sort((a, b) => a.Amount - b.Amount);
 
   return {
-    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, backgroundColor: 'rgba(15, 23, 42, 0.9)', borderColor: 'rgba(255,255,255,0.1)', textStyle: { color: '#fff' } },
-    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-    xAxis: { type: 'value', name: '€', nameTextStyle: {color: '#94a3b8'}, splitLine: { show: false }, axisLabel: { color: '#94a3b8' } },
+    tooltip: { 
+      trigger: 'axis', 
+      axisPointer: { type: 'shadow' }, 
+      backgroundColor: 'rgba(15, 23, 42, 0.9)', 
+      borderColor: 'rgba(255,255,255,0.1)', 
+      textStyle: { color: '#fff' },
+      formatter: (params) => {
+        const p = params[0];
+        return `${p.name}: <b>€${p.value.toLocaleString()}</b>`;
+      }
+    },
+    grid: { left: '3%', right: '8%', bottom: '3%', containLabel: true },
+    xAxis: { 
+      type: 'log', 
+      name: '€', 
+      nameTextStyle: {color: '#94a3b8'}, 
+      splitLine: { lineStyle: { color: 'rgba(255,255,255,0.05)' } }, 
+      axisLabel: { 
+        color: '#94a3b8',
+        formatter: (value) => {
+          if (value >= 1000) return '€' + (value / 1000) + 'k';
+          return '€' + value;
+        }
+      } 
+    },
     yAxis: { type: 'category', data: sorted.map(i => i.Country), axisLabel: { color: '#94a3b8' } },
     series: [{
       type: 'bar',
       data: sorted.map(i => i.Amount),
-      label: { show: true, position: 'insideRight', formatter: '€{c}', color: '#fff', fontWeight: 'bold' },
+      label: { 
+        show: true, 
+        position: 'insideRight', 
+        formatter: (params) => '€' + params.value.toLocaleString(), 
+        color: '#fff', 
+        fontWeight: 'bold',
+        fontSize: 10
+      },
       itemStyle: { color: '#10b981', borderRadius: 4 }
     }],
     backgroundColor: 'transparent'
