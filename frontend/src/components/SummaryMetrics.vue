@@ -34,6 +34,35 @@
       <div class="text-2xl md:text-4xl font-bold text-white mb-1">€{{ summary.flights_spent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</div>
       <div class="text-xs md:text-base text-muted">Total flights</div>
     </div>
+
+    <!-- Insights Row -->
+    <div v-if="summary && summary.top_category" class="md:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+      <div class="glass-card p-3 md:p-4">
+        <div class="text-[10px] md:text-xs text-muted uppercase mb-1">Top Category</div>
+        <div class="text-sm md:text-lg font-bold text-white truncate">{{ summary.top_category.Category }}</div>
+        <div class="text-[10px] md:text-xs text-accent-primary">€{{ summary.top_category.Amount.toLocaleString() }} total</div>
+      </div>
+      
+      <div class="glass-card p-3 md:p-4" v-if="summary.weekend_stats && summary.weekend_stats.length">
+        <div class="text-[10px] md:text-xs text-muted uppercase mb-1">Weekend vs Weekday</div>
+        <div class="text-sm md:text-lg font-bold text-white">
+          {{ ((summary.weekend_stats.find(s => s.Type === 'Weekend')?.Amount || 0) / (summary.weekend_stats.find(s => s.Type === 'Weekday')?.Amount || 1)).toFixed(1) }}x
+        </div>
+        <div class="text-[10px] md:text-xs text-accent-secondary">multiplier</div>
+      </div>
+
+      <div class="glass-card p-3 md:p-4" v-if="summary.most_expensive_country">
+        <div class="text-[10px] md:text-xs text-muted uppercase mb-1">Most Expensive</div>
+        <div class="text-sm md:text-lg font-bold text-white truncate">{{ summary.most_expensive_country.Country }}</div>
+        <div class="text-[10px] md:text-xs text-red-400">€{{ summary.most_expensive_country.Avg_Daily_Budget.toFixed(0) }}/day</div>
+      </div>
+
+      <div class="glass-card p-3 md:p-4" v-if="summary.cheapest_country">
+        <div class="text-[10px] md:text-xs text-muted uppercase mb-1">Cheapest</div>
+        <div class="text-sm md:text-lg font-bold text-white truncate">{{ summary.cheapest_country.Country }}</div>
+        <div class="text-[10px] md:text-xs text-accent-secondary">€{{ summary.cheapest_country.Avg_Daily_Budget.toFixed(0) }}/day</div>
+      </div>
+    </div>
   </div>
 </template>
 

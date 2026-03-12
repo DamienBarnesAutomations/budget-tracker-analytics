@@ -2,10 +2,10 @@
   <div class="h-full">
     <Panel header="📝 Recent Transactions" toggleable :collapsed="false" class="transaction-panel">
       <DataTable :value="transactions" size="small" stripedRows scrollable
-        class="p-datatable-sm custom-table">
+        class="p-datatable-sm custom-table text-xs md:text-sm">
         <Column field="Date" header="Date"></Column>
         <Column field="Category" header="Category"></Column>
-        <Column field="Country" header="Country"></Column>
+        <Column field="Country" header="Country" class="hidden md:table-cell"></Column>
         <Column field="Amount" header="Amount">
           <template #body="slotProps">
             <span class="font-medium text-white">€{{ slotProps.data.Amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</span>

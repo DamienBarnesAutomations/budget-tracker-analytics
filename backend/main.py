@@ -15,7 +15,8 @@ from transformations.data_transformations import (
     calculate_daily_average_per_category,
     calculate_average_daily_budget_per_country,
     calculate_total_spend_per_country,
-    calculate_cumulative_spend_per_country_by_day
+    calculate_cumulative_spend_per_country_by_day,
+    calculate_weekend_vs_weekday
 )
 
 app = FastAPI(title="Travel Expenses API")
@@ -37,7 +38,7 @@ async def get_summary():
     
     # Identify flight vs ground expenses
     flights_spent = float(df[df['Category'] == 'Flights']['Amount'].sum())
-    ground_df = df[df['Category'] != 'Flights']
+    ground_df = df[df['Category'] != 'Flights'].copy()
     ground_spent = float(ground_df['Amount'].sum())
     
     total_spent = float(df['Amount'].sum())
@@ -48,6 +49,24 @@ async def get_summary():
     percent_used = min(total_spent / TOTAL_BUDGET, 1.0)
     days_remaining = int(remaining / daily_avg) if daily_avg > 0 else 0
     
+    # NEW METRICS
+    # 1. Top Category (excluding Flights)
+    top_cat_df = ground_df.groupby('Category')['Amount'].sum().reset_index()
+    top_cat = top_cat_df.sort_values('Amount', ascending=False).iloc[0].to_dict() if not top_cat_df.empty else None
+    
+    # 2. Weekend vs Weekday
+    weekend_df = calculate_weekend_vs_weekday(ground_df)
+    weekend_stats = weekend_df.to_dict(orient="records") if not weekend_df.empty else []
+    
+    # 3. Country Insights (Most/Least expensive)
+    country_budgets = calculate_average_daily_budget_per_country(df.copy())
+    # Filter for countries with at least 3 days to avoid outliers
+    stable_countries = country_budgets[country_budgets['Total_Days'] >= 3]
+    if stable_countries.empty: stable_countries = country_budgets
+    
+    most_expensive = stable_countries.sort_values('Avg_Daily_Budget', ascending=False).iloc[0].to_dict() if not stable_countries.empty else None
+    cheapest = stable_countries.sort_values('Avg_Daily_Budget', ascending=True).iloc[0].to_dict() if not stable_countries.empty else None
+
     return {
         "total_spent": total_spent,
         "flights_spent": flights_spent,
@@ -57,7 +76,11 @@ async def get_summary():
         "days": total_days,
         "percent_used": percent_used,
         "days_remaining": days_remaining,
-        "total_budget": TOTAL_BUDGET
+        "total_budget": TOTAL_BUDGET,
+        "top_category": top_cat,
+        "weekend_stats": weekend_stats,
+        "most_expensive_country": most_expensive,
+        "cheapest_country": cheapest
     }
 
 @app.get("/api/charts/allocation")

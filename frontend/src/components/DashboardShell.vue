@@ -24,22 +24,22 @@
         </div>
 
         <!-- Row 2: Daily Average Card and Allocation Pie Chart -->
-        <div class="col-span-1 glass-card flex flex-col justify-center py-4 md:py-6" v-if="summary">
+        <div class="col-span-1 glass-card flex flex-col py-4 md:py-6" v-if="summary">
           <h3 class="text-muted mb-1 font-medium text-xs md:text-sm tracking-wider uppercase">Daily Avg</h3>
           <div class="text-2xl md:text-4xl font-bold text-white mb-1">€{{ summary.daily_avg.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</div>
           <div class="text-xs md:text-base text-muted">{{ summary.days }} ground days</div>
         </div>
-        <div class="col-span-1 md:col-span-1 lg:col-span-2 glass-card flex flex-col justify-center">
+        <div class="col-span-1 md:col-span-1 lg:col-span-2 glass-card flex flex-col">
           <AllocationPieChart :data="allocation" />
         </div>
 
         <!-- Row 3: Spending Trend Charts (Full Width) -->
-        <div class="col-span-1 md:col-span-2 lg:col-span-3">
+        <div class="col-span-1 md:col-span-2 lg:col-span-3 flex flex-col">
           <BurnTrendCharts :data="trends" />
         </div>
         
         <!-- Row 4: Country charts -->
-        <div class="col-span-1 md:col-span-2 lg:col-span-3">
+        <div class="col-span-1 md:col-span-2 lg:col-span-3 flex flex-col">
           <CountryBarCharts :data="countryCharts" />
         </div>
 
