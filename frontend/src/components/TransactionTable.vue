@@ -1,7 +1,7 @@
 <template>
   <div class="h-full">
     <Panel header="📝 Recent Transactions" toggleable :collapsed="false" class="transaction-panel">
-      <DataTable :value="transactions" size="small" stripedRows tableStyle="min-width: 50rem"
+      <DataTable :value="transactions" size="small" stripedRows scrollable
         class="p-datatable-sm custom-table">
         <Column field="Date" header="Date"></Column>
         <Column field="Category" header="Category"></Column>

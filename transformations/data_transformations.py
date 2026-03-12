@@ -51,16 +51,15 @@ def process_main_data(df):
         df.dropna(subset=['Amount'], inplace=True) 
         df['Amount'] = df['Amount'].abs()
 
-        # 6. Filter Category & Max Date
+        # 6. Filter Max Date (Keep Flights for summary metrics)
         df['Category'] = df['Category'].astype(str).str.strip().str.title()
         if 'Country' in df.columns:
             df['Country'] = df['Country'].astype(str).str.strip().str.title()
             
         initial_count = len(df)
-        df = df[~df['Category'].isin(["Flights"])]
         df = df[df['Date'].dt.date <= max_date]
         
-        logger.info(f"📊 Processed {len(df)} rows. 'Month' column added for Looker Studio.")
+        logger.info(f"📊 Processed {len(df)} rows. 'Month' column added. 'Flights' preserved in master data.")
         
         return df
 
@@ -90,6 +89,9 @@ def calculate_daily_average_per_category(df):
 
     # Ensure trip_duration is at least 1 to avoid division by zero
     trip_duration = max(trip_duration, 1)
+
+    # Exclude Flights from category allocation chart
+    df = df[df['Category'] != EXCLUDE_CATEGORY.strip().title()]
 
     total_per_cat = df.groupby('Category')['Amount'].sum()
     daily_avg = (total_per_cat / trip_duration).round(2).reset_index()
@@ -240,6 +242,9 @@ def calculate_total_spend_per_country(df):
     if 'Country' not in df.columns or df.empty:
         return pd.DataFrame()
 
+    # Exclude Flights from per-country total spend charts
+    df = df[df['Category'] != EXCLUDE_CATEGORY.strip().title()]
+    
     total_spend = df.groupby('Country')['Amount'].sum().reset_index()
     # Sort so the highest spending country is at the top
     return total_spend.sort_values(by='Amount', ascending=True)
@@ -248,6 +253,9 @@ def calculate_cumulative_spend_per_country_by_day(df):
     """Groups spend by country and day number for comparison."""
     if df.empty:
         return pd.DataFrame()
+
+    # Exclude Flights from per-country cumulative comparisons
+    df = df[df['Category'] != EXCLUDE_CATEGORY.strip().title()]
 
     # 1. Group by Country and Date to get daily totals
     daily_country = df.groupby(['Country', 'Date'])['Amount'].sum().reset_index()

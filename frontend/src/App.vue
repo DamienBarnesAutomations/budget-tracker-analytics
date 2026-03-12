@@ -37,21 +37,21 @@ body {
 .bento-grid {
   display: grid;
   grid-template-columns: repeat(1, minmax(0, 1fr));
-  gap: 1.5rem;
+  gap: 1rem;
 }
-.gap-4 { gap: 1rem; }
-.gap-6 { gap: 1.5rem; }
+.gap-4 { gap: 0.75rem; }
+.gap-6 { gap: 1rem; }
 .mb-6 { margin-bottom: 1.5rem; }
 .p-4 { padding: 1rem; }
 .p-6 { padding: 1.5rem; }
 .rounded-lg { border-radius: 0.5rem; }
 .rounded-xl { border-radius: 1rem; }
 .shadow { box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); }
-.text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
-.text-2xl { font-size: 1.5rem; line-height: 2rem; }
+.text-3xl { font-size: 1.5rem; line-height: 2rem; }
+.text-2xl { font-size: 1.25rem; line-height: 1.75rem; }
 .font-bold { font-weight: 700; }
 .font-semibold { font-weight: 600; }
-.text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+.text-sm { font-size: 0.75rem; line-height: 1rem; }
 .text-gray-500 { color: #6b7280; }
 .text-gray-400 { color: #9ca3af; }
 .text-gray-300 { color: #d1d5db; }
@@ -70,18 +70,18 @@ body {
 .text-blue-400 { color: #60a5fa; }
 .max-w-7xl { max-width: 80rem; }
 .mx-auto { margin-left: auto; margin-right: auto; }
-.text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+.text-4xl { font-size: 1.875rem; line-height: 2.25rem; }
 .justify-center { justify-content: center; }
 .gap-2 { gap: 0.5rem; }
 
-/* Glassmorphism Card */
+/* Glassmorphism Card (Mobile optimized padding) */
 .glass-card {
   background: var(--card-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--card-border);
   border-radius: 1rem;
-  padding: 1.5rem;
+  padding: 1.25rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
@@ -94,10 +94,10 @@ body {
 
 .glass-card h3 {
   margin-top: 0;
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text-main);
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -112,6 +112,13 @@ body {
 }
 
 @media (min-width: 768px) {
+  .bento-grid { gap: 1.5rem; }
+  .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+  .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+  .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+  .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+  .glass-card { padding: 1.5rem; }
+  .glass-card h3 { font-size: 1.125rem; margin-bottom: 1rem; }
   .bento-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .md\:p-8 { padding: 2rem; }

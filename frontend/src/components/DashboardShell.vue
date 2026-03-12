@@ -19,7 +19,7 @@
 
       <div v-else class="bento-grid">
         <!-- Top row: Summary Metrics and Allocation Pie Chart -->
-        <div class="md:col-span-2 lg:col-span-2">
+        <div class="col-span-1 md:col-span-2 lg:col-span-2">
           <SummaryMetrics :summary="summary" />
         </div>
         <div class="col-span-1 glass-card flex flex-col justify-center">
@@ -27,12 +27,12 @@
         </div>
 
         <!-- Middle row: Burn Trend Charts -->
-        <div class="md:col-span-2 lg:col-span-3">
+        <div class="col-span-1 md:col-span-2 lg:col-span-3">
           <BurnTrendCharts :data="trends" />
         </div>
         
         <!-- Bottom section: Country charts and Category breakdown -->
-        <div class="md:col-span-2 lg:col-span-2">
+        <div class="col-span-1 md:col-span-2 lg:col-span-2">
           <CountryBarCharts :data="countryCharts" />
         </div>
         <div class="col-span-1 glass-card flex flex-col justify-center">
@@ -40,7 +40,7 @@
         </div>
 
         <!-- Transactions Full Width -->
-        <div class="md:col-span-2 lg:col-span-3 glass-card">
+        <div class="col-span-1 md:col-span-2 lg:col-span-3 glass-card">
           <TransactionTable :transactions="transactions" />
         </div>
       </div>

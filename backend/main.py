@@ -35,15 +35,23 @@ async def get_summary():
     if df.empty:
         return {"error": "No data found"}
     
+    # Identify flight vs ground expenses
+    flights_spent = float(df[df['Category'] == 'Flights']['Amount'].sum())
+    ground_df = df[df['Category'] != 'Flights']
+    ground_spent = float(ground_df['Amount'].sum())
+    
     total_spent = float(df['Amount'].sum())
-    total_days = int(df['Date'].nunique())
-    daily_avg = total_spent / total_days if total_days > 0 else 0
+    total_days = int(ground_df['Date'].nunique())
+    daily_avg = ground_spent / total_days if total_days > 0 else 0
+    
     remaining = float(TOTAL_BUDGET - total_spent)
     percent_used = min(total_spent / TOTAL_BUDGET, 1.0)
     days_remaining = int(remaining / daily_avg) if daily_avg > 0 else 0
     
     return {
         "total_spent": total_spent,
+        "flights_spent": flights_spent,
+        "ground_spent": ground_spent,
         "daily_avg": daily_avg,
         "remaining": remaining,
         "days": total_days,
@@ -81,13 +89,14 @@ async def get_trend_charts():
     if df.empty:
         return {"cumulative": [], "comparison": []}
     
-    # Cumulative burn
-    burn_df = df.groupby('Date')['Amount'].sum().reset_index().sort_values('Date')
+    # Cumulative burn (excluding flights to show steady daily spend)
+    ground_df = df[df['Category'] != 'Flights'].copy()
+    burn_df = ground_df.groupby('Date')['Amount'].sum().reset_index().sort_values('Date')
     burn_df['Cumulative_Total'] = burn_df['Amount'].cumsum()
     # Format date for frontend
     burn_df['Date'] = pd.to_datetime(burn_df['Date']).dt.strftime('%Y-%m-%d')
     
-    # Comparison
+    # Comparison (already excludes flights in transformation logic)
     comparison_df = calculate_cumulative_spend_per_country_by_day(df.copy())
     
     return {
