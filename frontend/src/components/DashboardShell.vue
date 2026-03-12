@@ -18,20 +18,27 @@
       </div>
 
       <div v-else class="bento-grid">
-        <!-- Full Width Header: Summary Metrics -->
+        <!-- Row 1: Summary Metrics (Total Spent, Exhaustion, Flights) -->
         <div class="col-span-1 md:col-span-2 lg:col-span-3">
           <SummaryMetrics :summary="summary" />
         </div>
 
-        <!-- Middle row: Allocation Pie Chart and Burn Trend Charts -->
-        <div class="col-span-1 glass-card flex flex-col justify-center">
+        <!-- Row 2: Daily Average Card and Allocation Pie Chart -->
+        <div class="col-span-1 glass-card flex flex-col justify-center py-4 md:py-6" v-if="summary">
+          <h3 class="text-muted mb-1 font-medium text-xs md:text-sm tracking-wider uppercase">Daily Avg</h3>
+          <div class="text-2xl md:text-4xl font-bold text-white mb-1">€{{ summary.daily_avg.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</div>
+          <div class="text-xs md:text-base text-muted">{{ summary.days }} ground days</div>
+        </div>
+        <div class="col-span-1 md:col-span-1 lg:col-span-2 glass-card flex flex-col justify-center">
           <AllocationPieChart :data="allocation" />
         </div>
-        <div class="col-span-1 md:col-span-1 lg:col-span-2">
+
+        <!-- Row 3: Spending Trend Charts (Full Width) -->
+        <div class="col-span-1 md:col-span-2 lg:col-span-3">
           <BurnTrendCharts :data="trends" />
         </div>
         
-        <!-- Bottom section: Country charts -->
+        <!-- Row 4: Country charts -->
         <div class="col-span-1 md:col-span-2 lg:col-span-3">
           <CountryBarCharts :data="countryCharts" />
         </div>

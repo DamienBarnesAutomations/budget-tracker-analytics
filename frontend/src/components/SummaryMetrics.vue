@@ -1,7 +1,6 @@
-<template>
-  <div class="flex flex-col gap-4 md:gap-6 h-full">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 h-full">
     <!-- Combined Hero Card: Total Spent & Budget Exhaustion -->
-    <div v-if="summary" class="glass-card w-full">
+    <div v-if="summary" class="lg:col-span-2 glass-card">
       <div class="flex flex-col md:flex-row md:items-end justify-between mb-4 md:mb-6">
         <div>
           <h3 class="text-muted mb-1 font-medium text-xs md:text-sm tracking-wider uppercase">Total Spent</h3>
@@ -28,19 +27,11 @@
       </div>
     </div>
 
-    <!-- Secondary Metrics Row -->
-    <div v-if="summary" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-      <div class="glass-card flex flex-col justify-center py-4 md:py-6">
-        <h3 class="text-muted mb-1 font-medium text-xs md:text-sm tracking-wider uppercase">Flights</h3>
-        <div class="text-2xl md:text-3xl font-bold text-white mb-1">€{{ summary.flights_spent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</div>
-        <div class="text-xs md:text-sm text-muted">Total flights</div>
-      </div>
-      
-      <div class="glass-card flex flex-col justify-center py-4 md:py-6">
-        <h3 class="text-muted mb-1 font-medium text-xs md:text-sm tracking-wider uppercase">Daily Avg</h3>
-        <div class="text-2xl md:text-3xl font-bold text-white mb-1">€{{ summary.daily_avg.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</div>
-        <div class="text-xs md:text-sm text-muted">{{ summary.days }} ground days</div>
-      </div>
+    <!-- Flights Card -->
+    <div v-if="summary" class="glass-card flex flex-col justify-center py-4 md:py-6 lg:items-center">
+      <h3 class="text-muted mb-1 font-medium text-xs md:text-sm tracking-wider uppercase lg:w-full lg:text-center text-left">Flights</h3>
+      <div class="text-2xl md:text-4xl font-bold text-white mb-1">€{{ summary.flights_spent.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</div>
+      <div class="text-xs md:text-base text-muted">Total flights</div>
     </div>
   </div>
 </template>
