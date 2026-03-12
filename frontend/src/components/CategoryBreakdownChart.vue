@@ -66,7 +66,12 @@ const option = computed(() => {
 
 <style scoped>
 .chart {
-  min-height: 400px;
+  min-height: 300px;
   width: 100%;
+}
+@media (min-width: 768px) {
+  .chart {
+    min-height: 400px;
+  }
 }
 </style>

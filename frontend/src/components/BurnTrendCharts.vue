@@ -1,11 +1,11 @@
 <template>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 h-full">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 h-full">
     <div class="glass-card">
-      <h3 class="text-lg font-semibold text-white mb-4">📈 Total Spending Over Time</h3>
+      <h3 class="text-lg font-semibold text-white mb-2 md:mb-4">📈 Total Spending Over Time</h3>
       <v-chart class="chart" :option="cumulativeOption" autoresize />
     </div>
     <div class="glass-card">
-      <h3 class="text-lg font-semibold text-white mb-4">📈 Cumulative Spend Comparison</h3>
+      <h3 class="text-lg font-semibold text-white mb-2 md:mb-4">📈 Cumulative Spend Comparison</h3>
       <v-chart class="chart" :option="comparisonOption" autoresize />
     </div>
   </div>
@@ -101,6 +101,11 @@ const comparisonOption = computed(() => {
 
 <style scoped>
 .chart {
-  height: 300px;
+  height: 250px;
+}
+@media (min-width: 768px) {
+  .chart {
+    height: 300px;
+  }
 }
 </style>

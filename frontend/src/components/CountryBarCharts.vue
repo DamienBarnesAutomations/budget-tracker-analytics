@@ -1,11 +1,11 @@
 <template>
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 h-full">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 h-full">
     <div class="glass-card">
-      <h3 class="text-lg font-semibold text-white mb-4">🌏 By Country (Total)</h3>
+      <h3 class="text-lg font-semibold text-white mb-2 md:mb-4">🌏 By Country (Total)</h3>
       <v-chart class="chart" :option="totalOption" autoresize />
     </div>
     <div class="glass-card">
-      <h3 class="text-lg font-semibold text-white mb-4">🌏 By Country (Daily)</h3>
+      <h3 class="text-lg font-semibold text-white mb-2 md:mb-4">🌏 By Country (Daily)</h3>
       <v-chart class="chart" :option="dailyOption" autoresize />
     </div>
   </div>
@@ -79,6 +79,11 @@ const dailyOption = computed(() => {
 
 <style scoped>
 .chart {
-  height: 300px;
+  height: 250px;
+}
+@media (min-width: 768px) {
+  .chart {
+    height: 300px;
+  }
 }
 </style>
